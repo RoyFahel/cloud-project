@@ -7,7 +7,7 @@ class Order {
   final String firstName;
   final String lastName;
   final String email;
-  String categoryName;
+  String groupName;
   List<String> products;
   bool isDeleted;
 
@@ -16,7 +16,7 @@ class Order {
     required this.firstName,
     required this.lastName,
     required this.email,
-    required this.categoryName,
+    required this.groupName,
     required this.products,
     this.isDeleted = false,
   });
@@ -35,7 +35,7 @@ class _AdminScreenState extends State<AdminScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = context.read<OrderProvider>();
-      provider.loadCategories();
+      provider.loadGroups();
       provider.loadProducts();
       provider.loadOrders();
     });
@@ -45,16 +45,16 @@ class _AdminScreenState extends State<AdminScreen> {
     final provider = context.read<OrderProvider>();
     final formKey = GlobalKey<FormState>();
 
-    // For adding new category (category)
-    final categoryNameController = TextEditingController();
+    // For adding new group (group)
+    final groupNameController = TextEditingController();
 
     // For adding new Product item (product)
     final productNameController = TextEditingController();
 
-    String? selectedCategoryId;
+    String? selectedGroupId;
 
     // For editing existing
-    final illnessController = TextEditingController(text: existing?.categoryName ?? "");
+    final illnessController = TextEditingController(text: existing?.groupName ?? "");
     final List<TextEditingController> productControllers = [];
 
     if (existing != null && existing.products.isNotEmpty) {
@@ -77,7 +77,7 @@ class _AdminScreenState extends State<AdminScreen> {
             return AlertDialog(
               backgroundColor: surface,
               title: Text(
-                existing == null ? "Add Category & Product" : "Edit Category",
+                existing == null ? "Add Group & Product" : "Edit Group",
                 style: TextStyle(color: onSurface, fontWeight: FontWeight.bold),
               ),
               content: SingleChildScrollView(
@@ -89,17 +89,17 @@ class _AdminScreenState extends State<AdminScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if (existing == null) ...[
-                          // Add new Category section
+                          // Add new Group section
                           Text(
-                            "Add New Product Category",
+                            "Add New Product Group",
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: onSurface),
                           ),
                           const SizedBox(height: 8),
                           TextFormField(
-                            controller: categoryNameController,
+                            controller: groupNameController,
                             style: TextStyle(color: onSurface),
                             decoration: InputDecoration(
-                              labelText: "Category Name",
+                              labelText: "Group Name",
                               labelStyle: TextStyle(color: accent),
                               border: const OutlineInputBorder(),
                               hintText: "e.g., Creatine, Protein, Accessories",
@@ -114,25 +114,25 @@ class _AdminScreenState extends State<AdminScreen> {
                               Expanded(
                                 child: ElevatedButton.icon(
                                   onPressed: () async {
-                                    if (categoryNameController.text.trim().isEmpty) {
+                                    if (groupNameController.text.trim().isEmpty) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(
-                                          content: Text('Please fill in category name'),
+                                          content: Text('Please fill in group name'),
                                           backgroundColor: Colors.orange,
                                         ),
                                       );
                                       return;
                                     }
 
-                                    final success = await provider.createCategory(
-                                      categoryName: categoryNameController.text.trim(),
+                                    final success = await provider.createGroup(
+                                      groupName: groupNameController.text.trim(),
                                     );
 
                                     if (success) {
-                                      categoryNameController.clear();
+                                      groupNameController.clear();
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(
-                                          content: Text('Category added to database!'),
+                                          content: Text('Group added to database!'),
                                           backgroundColor: Colors.green,
                                         ),
                                       );
@@ -140,14 +140,14 @@ class _AdminScreenState extends State<AdminScreen> {
                                     } else {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(
-                                          content: Text('Failed to add category'),
+                                          content: Text('Failed to add group'),
                                           backgroundColor: Colors.red,
                                         ),
                                       );
                                     }
                                   },
                                   icon: const Icon(Icons.add, color: Colors.black),
-                                  label: const Text('Add Category'),
+                                  label: const Text('Add Group'),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: accent,
                                     foregroundColor: Colors.black,
@@ -167,34 +167,34 @@ class _AdminScreenState extends State<AdminScreen> {
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: onSurface),
                           ),
                           const SizedBox(height: 8),
-                          if (provider.categories.isEmpty)
+                          if (provider.groups.isEmpty)
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                'Add a category first before adding products.',
+                                'Add a group first before adding products.',
                                 style: TextStyle(color: Colors.orange[300]),
                               ),
                             )
                           else ...[
                             DropdownButtonFormField<String>(
                               dropdownColor: surface,
-                              value: selectedCategoryId ?? provider.categories.first.id,
+                              value: selectedGroupId ?? provider.groups.first.id,
                               decoration: InputDecoration(
-                                labelText: 'Related Category',
+                                labelText: 'Related Group',
                                 labelStyle: TextStyle(color: accent),
                                 border: const OutlineInputBorder(),
                                 filled: true,
                                 fillColor: Colors.grey[850],
                               ),
-                              items: provider.categories.map((category) {
+                              items: provider.groups.map((group) {
                                 return DropdownMenuItem(
-                                  value: category.id,
-                                  child: Text(category.categoryName, style: TextStyle(color: onSurface)),
+                                  value: group.id,
+                                  child: Text(group.groupName, style: TextStyle(color: onSurface)),
                                 );
                               }).toList(),
                               onChanged: (value) {
                                 setStateDialog(() {
-                                  selectedCategoryId = value;
+                                  selectedGroupId = value;
                                 });
                               },
                             ),
@@ -227,7 +227,7 @@ class _AdminScreenState extends State<AdminScreen> {
 
                                 final success = await provider.createProduct(
                                   productName: productNameController.text.trim(),
-                                  categoryId: (selectedCategoryId ?? provider.categories.first.id)!,
+                                  groupId: (selectedGroupId ?? provider.groups.first.id)!,
                                 );
 
                                 if (success) {
@@ -258,12 +258,12 @@ class _AdminScreenState extends State<AdminScreen> {
                             ),
                           ],
                         ] else ...[
-                          // Edit existing order (edit category + product fields)
+                          // Edit existing order (edit group + product fields)
                           TextFormField(
                             controller: illnessController,
                             style: TextStyle(color: onSurface),
                             decoration: InputDecoration(
-                              labelText: "Category",
+                              labelText: "Group",
                               labelStyle: TextStyle(color: accent),
                               border: const OutlineInputBorder(),
                               filled: true,
@@ -271,7 +271,7 @@ class _AdminScreenState extends State<AdminScreen> {
                             ),
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
-                                return "Please enter a category name";
+                                return "Please enter a group name";
                               }
                               return null;
                             },
@@ -337,7 +337,7 @@ class _AdminScreenState extends State<AdminScreen> {
                           .toList();
 
                       setState(() {
-                        existing.categoryName = illness;
+                        existing.groupName = illness;
                         existing.products = meds;
                       });
 
@@ -393,7 +393,7 @@ class _AdminScreenState extends State<AdminScreen> {
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _buildCategoriesCard(provider, cardSurface!, accent, onSurface),
+                      _buildGroupsCard(provider, cardSurface!, accent, onSurface),
                       const SizedBox(height: 12),
                       _buildProductsCard(provider, cardSurface, accent, onSurface),
                       const SizedBox(height: 12),
@@ -403,11 +403,11 @@ class _AdminScreenState extends State<AdminScreen> {
                 : Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Left column: categories + products stacked
+                      // Left column: groups + products stacked
                       Expanded(
                         child: Column(
                           children: [
-                            _buildCategoriesCard(provider, cardSurface!, accent, onSurface),
+                            _buildGroupsCard(provider, cardSurface!, accent, onSurface),
                             const SizedBox(height: 12),
                             _buildProductsCard(provider, cardSurface, accent, onSurface),
                           ],
@@ -427,7 +427,7 @@ class _AdminScreenState extends State<AdminScreen> {
     );
   }
 
-  Widget _buildCategoriesCard(OrderProvider provider, Color cardSurface, Color accent, Color onSurface) {
+  Widget _buildGroupsCard(OrderProvider provider, Color cardSurface, Color accent, Color onSurface) {
     return Card(
       color: cardSurface,
       elevation: 6,
@@ -442,15 +442,15 @@ class _AdminScreenState extends State<AdminScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(children: [
-                  Icon(Icons.category, color: accent),
+                  Icon(Icons.group, color: accent),
                   const SizedBox(width: 8),
                   Text(
-                    "Product Categories",
+                    "Product Groups",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: onSurface),
                   ),
                 ]),
                 Text(
-                  "${provider.categories.length} items",
+                  "${provider.groups.length} items",
                   style: TextStyle(color: Colors.grey[400], fontSize: 13),
                 ),
               ],
@@ -459,26 +459,26 @@ class _AdminScreenState extends State<AdminScreen> {
             const SizedBox(height: 8),
             SizedBox(
               height: 220,
-              child: provider.categories.isEmpty
+              child: provider.groups.isEmpty
                   ? Center(
                       child: Text(
-                        "No categories added yet.\nClick 'Add to Catalog' to add.",
+                        "No groups added yet.\nClick 'Add to Catalog' to add.",
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.grey[400]),
                       ),
                     )
                   : ListView.separated(
-                      itemCount: provider.categories.length,
+                      itemCount: provider.groups.length,
                       separatorBuilder: (_, __) => const Divider(color: Colors.grey),
                       itemBuilder: (context, index) {
-                        final category = provider.categories[index];
+                        final group = provider.groups[index];
                         return ListTile(
                           contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
                           leading: CircleAvatar(
                             backgroundColor: Colors.grey[800],
-                            child: Icon(Icons.category, color: accent),
+                            child: Icon(Icons.group, color: accent),
                           ),
-                          title: Text(category.categoryName, style: TextStyle(color: onSurface)),
+                          title: Text(group.groupName, style: TextStyle(color: onSurface)),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () async {
@@ -486,9 +486,9 @@ class _AdminScreenState extends State<AdminScreen> {
                                 context: context,
                                 builder: (ctx) => AlertDialog(
                                   backgroundColor: Colors.grey[900],
-                                  title: Text("Delete Category", style: TextStyle(color: onSurface)),
+                                  title: Text("Delete Group", style: TextStyle(color: onSurface)),
                                   content: Text(
-                                    "Delete '${category.categoryName}'?\n\nThis will also delete all related Product items.",
+                                    "Delete '${group.groupName}'?\n\nThis will also delete all related Product items.",
                                     style: TextStyle(color: Colors.grey[300]),
                                   ),
                                   actions: [
@@ -505,14 +505,14 @@ class _AdminScreenState extends State<AdminScreen> {
                                 ),
                               );
 
-                              if (confirmed == true && category.id != null) {
-                                final success = await provider.deleteCategory(category.id!);
+                              if (confirmed == true && group.id != null) {
+                                final success = await provider.deleteGroup(group.id!);
                                 if (success && mounted) {
-                                  // Reload products to remove those related to deleted category
+                                  // Reload products to remove those related to deleted group
                                   await provider.loadProducts();
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                      content: Text('Category deleted successfully'),
+                                      content: Text('Group deleted successfully'),
                                       backgroundColor: Colors.green,
                                     ),
                                   );
@@ -576,11 +576,11 @@ class _AdminScreenState extends State<AdminScreen> {
                       itemBuilder: (context, index) {
                         final product = provider.products[index];
 
-                        // Find the category name, handle case where category might not exist
-                        String categoryName = 'Unknown';
+                        // Find the group name, handle case where group might not exist
+                        String groupName = 'Unknown';
                         try {
-                          final category = provider.categories.firstWhere((m) => m.id == product.categoryId);
-                          categoryName = category.categoryName;
+                          final group = provider.groups.firstWhere((m) => m.id == product.groupId);
+                          groupName = group.groupName;
                         } catch (e) {
                           // ignore
                         }
@@ -592,7 +592,7 @@ class _AdminScreenState extends State<AdminScreen> {
                             child: Icon(Icons.fitness_center, color: accent),
                           ),
                           title: Text(product.productName, style: TextStyle(color: onSurface)),
-                          subtitle: Text('Category: $categoryName', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                          subtitle: Text('Group: $groupName', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () async {
@@ -709,7 +709,7 @@ class _AdminScreenState extends State<AdminScreen> {
                             ),
                             DataColumn(
                               label: Text(
-                                'Category',
+                                'Group',
                                 style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                               ),
                             ),
@@ -729,10 +729,10 @@ class _AdminScreenState extends State<AdminScreen> {
                               customerEmail = order.customer!['email'] ?? '';
                             }
 
-                            // Get category name
-                            String categoryName = 'Unknown';
-                            if (order.category != null) {
-                              categoryName = order.category!['categoryName'];
+                            // Get group name
+                            String groupName = 'Unknown';
+                            if (order.group != null) {
+                              groupName = order.group!['groupName'];
                             }
 
                             // Get Product name
@@ -764,7 +764,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Text(
-                                      categoryName,
+                                      groupName,
                                       style: TextStyle(
                                         color: Colors.amber.shade200,
                                         fontSize: 12,

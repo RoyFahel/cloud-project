@@ -6,10 +6,10 @@ const productSchema = new mongoose.Schema({
     required: [true, 'Product name is required'],
     trim: true
   },
-  category_id: {
+  group_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
-    required: [true, 'Category ID is required']
+    ref: 'Group',
+    required: [true, 'Group ID is required']
   },
   isDeleted: {
     type: Boolean,

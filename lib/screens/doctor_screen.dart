@@ -16,7 +16,7 @@ class _DoctorScreenState extends State<DoctorScreen> {
   final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
 
-  String? _selectedCategoryId;
+  String? _selectedGroupId;
   String? _selectedProductId;
   bool _isSubmitting = false;
 
@@ -40,10 +40,10 @@ class _DoctorScreenState extends State<DoctorScreen> {
     super.dispose();
   }
 
-  void _onCategoryChanged(String? categoryId) {
-    if (categoryId != null) {
+  void _onGroupChanged(String? groupId) {
+    if (groupId != null) {
       setState(() {
-        _selectedCategoryId = categoryId;
+        _selectedGroupId = groupId;
         _selectedProductId = null;
       });
     }
@@ -54,8 +54,8 @@ class _DoctorScreenState extends State<DoctorScreen> {
       return;
     }
 
-    if (_selectedCategoryId == null) {
-      _showErrorDialog('Please select a product category');
+    if (_selectedGroupId == null) {
+      _showErrorDialog('Please select a product group');
       return;
     }
 
@@ -85,7 +85,7 @@ class _DoctorScreenState extends State<DoctorScreen> {
       // Then create the order with the customer ID
       final orderSuccess = await orderProvider.createOrder(
         customerId: customer.id!,
-        categoryId: _selectedCategoryId!,
+        groupId: _selectedGroupId!,
         productId: _selectedProductId!,
       );
 
@@ -357,15 +357,15 @@ class _DoctorScreenState extends State<DoctorScreen> {
                         ),
                         const SizedBox(height: 20),
 
-                        // Product Category Dropdown (was Type of Illness)
+                        // Product Group Dropdown (was Type of Illness)
                         Consumer<OrderProvider>(
                           builder: (context, orderProvider, child) {
                             return DropdownButtonFormField<String>(
-                              value: _selectedCategoryId,
+                              value: _selectedGroupId,
                               dropdownColor: Colors.grey[850],
                               decoration: InputDecoration(
-                                labelText: 'Product Category',
-                                prefixIcon: const Icon(Icons.category,
+                                labelText: 'Product Group',
+                                prefixIcon: const Icon(Icons.group,
                                     color: Colors.grey),
                                 labelStyle:
                                     const TextStyle(color: Colors.amber),
@@ -374,18 +374,18 @@ class _DoctorScreenState extends State<DoctorScreen> {
                                 border: const OutlineInputBorder(),
                               ),
                               items:
-                                  orderProvider.categories.map((category) {
+                                  orderProvider.groups.map((group) {
                                 return DropdownMenuItem<String>(
-                                  value: category.id,
-                                  child: Text(category.categoryName,
+                                  value: group.id,
+                                  child: Text(group.groupName,
                                       style:
                                           const TextStyle(color: Colors.white)),
                                 );
                               }).toList(),
-                              onChanged: _onCategoryChanged,
+                              onChanged: _onGroupChanged,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please select a product category';
+                                  return 'Please select a product group';
                                 }
                                 return null;
                               },
@@ -411,8 +411,8 @@ class _DoctorScreenState extends State<DoctorScreen> {
                                 border: const OutlineInputBorder(),
                               ),
                               items: orderProvider
-                                  .getProductsForCategory(
-                                      _selectedCategoryId ?? '')
+                                  .getProductsForGroup(
+                                      _selectedGroupId ?? '')
                                   .map((product) {
                                 return DropdownMenuItem<String>(
                                   value: product.id,

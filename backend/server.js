@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 
 const customerRoutes = require('./routes/customers');
-const categoryRoutes = require('./routes/categories');
+const groupRoutes = require('./routes/groups');
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 
@@ -55,7 +55,7 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 app.use('/api/customers', customerRoutes);
-app.use('/api/categories', categoryRoutes);
+app.use('/api/groups', groupRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 
@@ -76,7 +76,7 @@ app.get('/', (req, res) => {
       '/health',
       '/db-info',
       '/api/customers',
-      '/api/categories',
+      '/api/groups',
       '/api/products',
       '/api/orders'
     ]

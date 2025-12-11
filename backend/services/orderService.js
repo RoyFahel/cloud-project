@@ -5,7 +5,7 @@ class OrderService {
     try {
       const orders = await Order.find({ isDeleted: false })
         .populate('customer_id', 'firstName lastName email age gender')
-        .populate('category_id', 'categoryName')
+        .populate('group_id', 'groupName')
         .populate('product_id', 'productName')
         .sort({ createdAt: -1 });
       return { orders: orders || [], count: orders ? orders.length : 0 };
@@ -18,7 +18,7 @@ class OrderService {
   static async getOrderById(id) {
     return await Order.findOne({ _id: id, isDeleted: false })
       .populate('customer_id', 'firstName lastName email age gender')
-      .populate('category_id', 'categoryName')
+      .populate('group_id', 'groupName')
       .populate('product_id', 'productName');
   }
 
@@ -32,7 +32,7 @@ class OrderService {
       // Return populated order
       return await Order.findById(saved._id)
         .populate('customer_id', 'firstName lastName email age gender')
-        .populate('category_id', 'categoryName')
+        .populate('group_id', 'groupName')
         .populate('product_id', 'productName');
     } catch (error) {
       console.error('❌ Error in createOrder service:', error.message);
@@ -47,7 +47,7 @@ class OrderService {
       { new: true, runValidators: true }
     )
       .populate('customer_id', 'firstName lastName email age gender')
-      .populate('category_id', 'categoryName')
+      .populate('group_id', 'groupName')
       .populate('product_id', 'productName');
   }
 

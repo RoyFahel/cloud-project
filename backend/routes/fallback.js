@@ -11,7 +11,7 @@ const mockProducts = [
   { _id: '1', nom: 'Aspirin', description: 'Pain reliever', prix: 10 }
 ];
 
-const mockCategories = [
+const mockGroups = [
   { _id: '1', nom: 'Headache', description: 'Common pain' }
 ];
 
@@ -37,15 +37,15 @@ router.post('/products', (req, res) => {
   res.json(newProduct);
 });
 
-// Categories
-router.get('/categories', (req, res) => {
-  res.json(mockCategories);
+// Groups
+router.get('/groups', (req, res) => {
+  res.json(mockGroups);
 });
 
-router.post('/categories', (req, res) => {
-  const newCategory = { _id: Date.now().toString(), ...req.body };
-  mockCategories.push(newCategory);
-  res.json(newCategory);
+router.post('/groups', (req, res) => {
+  const newGroup = { _id: Date.now().toString(), ...req.body };
+  mockGroups.push(newGroup);
+  res.json(newGroup);
 });
 
 module.exports = router;

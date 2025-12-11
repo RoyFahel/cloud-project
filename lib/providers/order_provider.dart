@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' hide Category;
-import '../models/category.dart';
+import 'package:flutter/foundation.dart' hide Group;
+import '../models/group.dart';
 import '../models/product.dart';
 import '../models/order.dart';
 import '../models/customer.dart';
 import '../services/api_service.dart';
 
 class OrderProvider with ChangeNotifier {
-  List<Category> _categories = [];
+  List<Group> _groups = [];
   List<Product> _products = [];
   final List<Order> _orders = [];
   List<Customer> _customers = [];
@@ -15,7 +15,7 @@ class OrderProvider with ChangeNotifier {
   String? _errorMessage;
 
   // Getters
-  List<Category> get categories => _categories;
+  List<Group> get groups => _groups;
   List<Product> get products => _products;
   List<Order> get orders => _orders;
   List<Customer> get customers => _customers;
@@ -39,17 +39,17 @@ class OrderProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Load all categories from database
-  Future<void> loadCategories() async {
+  // Load all groups from database
+  Future<void> loadGroups() async {
     try {
-      _categories = await ApiService.getCategories();
-      debugPrint('✅ Loaded ${_categories.length} categories');
-      for (var category in _categories) {
-        debugPrint('   Category: ${category.categoryName} (ID: ${category.id})');
+      _groups = await ApiService.getGroups();
+      debugPrint('✅ Loaded ${_groups.length} groups');
+      for (var group in _groups) {
+        debugPrint('   Group: ${group.groupName} (ID: ${group.id})');
       }
       notifyListeners();
     } catch (e) {
-      debugPrint('❌ Error loadingg categories: $e');
+      debugPrint('❌ Error loadingg groups: $e');
       rethrow;
     }
   }
@@ -96,7 +96,7 @@ class OrderProvider with ChangeNotifier {
     _setLoading(true);
     try {
       await Future.wait([
-        loadCategories(),
+        loadGroups(),
         loadProducts(),
         loadCustomers(),
         loadOrders(),
@@ -109,15 +109,15 @@ class OrderProvider with ChangeNotifier {
     }
   }
 
-  // Get products filtered by category
-  List<Product> getProductsForCategory(String categoryId) {
-    return _products.where((med) => med.categoryId == categoryId).toList();
+  // Get products filtered by group
+  List<Product> getProductsForGroup(String groupId) {
+    return _products.where((med) => med.groupId == groupId).toList();
   }
 
   // Create a new order
   Future<bool> createOrder({
     required String customerId,
-    required String categoryId,
+    required String groupId,
     required String productId,
     String notes = '',
   }) async {
@@ -127,7 +127,7 @@ class OrderProvider with ChangeNotifier {
       
       final orderData = {
         'customer_id': customerId,
-        'category_id': categoryId,
+        'group_id': groupId,
         'product_id': productId,
         'date': DateTime.now().toIso8601String(),
         'notes': notes,
@@ -179,10 +179,10 @@ class OrderProvider with ChangeNotifier {
     }
   }
 
-  // Get category by ID
-  Category? getCategoryById(String id) {
+  // Get group by ID
+  Group? getGroupById(String id) {
     try {
-      return _categories.firstWhere((category) => category.id == id);
+      return _groups.firstWhere((group) => group.id == id);
     } catch (e) {
       return null;
     }
@@ -206,49 +206,49 @@ class OrderProvider with ChangeNotifier {
     }
   }
 
-  // CRUD operations for Categories
-  Future<bool> createCategory({
-    required String categoryName,
+  // CRUD operations for Groups
+  Future<bool> createGroup({
+    required String groupName,
   
   }) async {
     try {
       _setLoading(true);
       _clearError();
       
-      final category = await ApiService.createCategory({
-        'categoryName': categoryName,
+      final group = await ApiService.createGroup({
+        'groupName': groupName,
        
       });
       
-      _categories.add(category);
+      _groups.add(group);
       notifyListeners();
-      debugPrint('✅ Created category: $categoryName');
+      debugPrint('✅ Created group: $groupName');
       return true;
     } catch (e) {
-      debugPrint('❌ Error creating category: $e');
-      _setError('Failed to create category: $e');
+      debugPrint('❌ Error creating group: $e');
+      _setError('Failed to create group: $e');
       return false;
     } finally {
       _setLoading(false);
     }
   }
 
-  Future<bool> deleteCategory(String id) async {
+  Future<bool> deleteGroup(String id) async {
     try {
       _setLoading(true);
       _clearError();
       
-      await ApiService.deleteCategory(id);
+      await ApiService.deleteGroup(id);
       
-      _categories.removeWhere((category) => category.id == id);
-      // Also remove products related to this category from local list
-      _products.removeWhere((product) => product.categoryId == id);
+      _groups.removeWhere((group) => group.id == id);
+      // Also remove products related to this group from local list
+      _products.removeWhere((product) => product.groupId == id);
       notifyListeners();
-      debugPrint('✅ Deleted category: $id and related products');
+      debugPrint('✅ Deleted group: $id and related products');
       return true;
     } catch (e) {
-      debugPrint('❌ Error deleting category: $e');
-      _setError('Failed to delete category: $e');
+      debugPrint('❌ Error deleting group: $e');
+      _setError('Failed to delete group: $e');
       return false;
     } finally {
       _setLoading(false);
@@ -259,7 +259,7 @@ class OrderProvider with ChangeNotifier {
   Future<bool> createProduct({
     required String productName,
     
-    required String categoryId,
+    required String groupId,
   }) async {
     try {
       _setLoading(true);
@@ -268,7 +268,7 @@ class OrderProvider with ChangeNotifier {
       final product = await ApiService.createProduct({
         'productName': productName,
         
-        'category_id': categoryId, // Backend expects category_id, not categoryId
+        'group_id': groupId, // Backend expects group_id, not groupId
       });
       
       _products.add(product);

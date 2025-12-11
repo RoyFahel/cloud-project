@@ -1,7 +1,7 @@
 class Order {
   final String? id;
   final String customerId;
-  final String categoryId;
+  final String groupId;
   final String productId;
   final DateTime date;
  
@@ -10,19 +10,19 @@ class Order {
   
  
   final Map<String, dynamic>? customer;
-  final Map<String, dynamic>? category;
+  final Map<String, dynamic>? group;
   final Map<String, dynamic>? product;
 
   Order({
     this.id,
     required this.customerId,
-    required this.categoryId,
+    required this.groupId,
     required this.productId,
     required this.date,
     this.createdAt,
     this.updatedAt,
     this.customer,
-    this.category,
+    this.group,
     this.product,
   });
 
@@ -42,7 +42,7 @@ class Order {
     return Order(
       id: extractId(),
       customerId: json['customer_id']?.toString() ?? '',
-      categoryId: json['category_id']?.toString() ?? '',
+      groupId: json['group_id']?.toString() ?? '',
       productId: json['product_id']?.toString() ?? '',
       date: json['date'] != null 
           ? DateTime.parse(json['date'])
@@ -57,8 +57,8 @@ class Order {
       customer: json['customer_id'] is Map<String, dynamic> 
           ? Map<String, dynamic>.from(json['customer_id'])
           : null,
-      category: json['category_id'] is Map<String, dynamic> 
-          ? Map<String, dynamic>.from(json['category_id'])
+      group: json['group_id'] is Map<String, dynamic> 
+          ? Map<String, dynamic>.from(json['group_id'])
           : null,
       product: json['product_id'] is Map<String, dynamic> 
           ? Map<String, dynamic>.from(json['product_id'])
@@ -70,7 +70,7 @@ class Order {
   Map<String, dynamic> toJson() {
     return {
       'customer_id': customerId,
-      'category_id': categoryId,
+      'group_id': groupId,
       'product_id': productId,
       'date': date.toIso8601String(),
     
@@ -79,6 +79,6 @@ class Order {
 
   @override
   String toString() {
-    return 'Order(id: $id, customerId: $customerId, categoryId: $categoryId, productId: $productId, date: $date)';
+    return 'Order(id: $id, customerId: $customerId, groupId: $groupId, productId: $productId, date: $date)';
   }
 }

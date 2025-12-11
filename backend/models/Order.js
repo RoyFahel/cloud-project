@@ -6,10 +6,10 @@ const orderSchema = new mongoose.Schema({
     ref: 'Customer',
     required: [true, 'Customer ID is required']
   },
-  category_id: {
+  group_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
-    required: [true, 'Category ID is required']
+    ref: 'Group',
+    required: [true, 'Group ID is required']
   },
   product_id: {
     type: mongoose.Schema.Types.ObjectId,

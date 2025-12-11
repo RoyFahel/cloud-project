@@ -1,11 +1,11 @@
 const Product = require('../models/Product');
-const Category = require('../models/Category'); // Import to ensure model is registered
+const Group = require('../models/Group'); // Import to ensure model is registered
 
 class ProductService {
   static async getAllProducts() {
     try {
       const products = await Product.find({ isDeleted: false })
-        .populate('category_id', 'categoryName')
+        .populate('group_id', 'groupName')
         .sort({ createdAt: -1 });
       return { products: products || [], count: products ? products.length : 0 };
     } catch (error) {
@@ -17,7 +17,7 @@ class ProductService {
 
   static async getProductById(id) {
     return await Product.findOne({ _id: id, isDeleted: false })
-      .populate('category_id', 'categoryName');
+      .populate('group_id', 'groupName');
   }
 
   static async createProduct(productData) {
@@ -28,19 +28,19 @@ class ProductService {
       if (!productData.productName) {
         throw new Error('Product name is required');
       }
-      if (!productData.category_id) {
-        throw new Error('Category ID is required');
+      if (!productData.group_id) {
+        throw new Error('Group ID is required');
       }
       
-      // Check if category exists
-      const category = await Category.findById(productData.category_id);
-      if (!category) {
-        throw new Error(`Category with ID ${productData.category_id} not found`);
+      // Check if group exists
+      const group = await Group.findById(productData.group_id);
+      if (!group) {
+        throw new Error(`Group with ID ${productData.group_id} not found`);
       }
       
       const newProduct = new Product(productData);
       const saved = await newProduct.save();
-      return await Product.findById(saved._id).populate('category_id', 'categoryName');
+      return await Product.findById(saved._id).populate('group_id', 'groupName');
     } catch (error) {
       console.error('❌ Error in createProduct service:', error.message);
       throw error;
@@ -52,7 +52,7 @@ class ProductService {
       id,
       { ...productData, updatedAt: Date.now() },
       { new: true, runValidators: true }
-    ).populate('category_id', 'categoryName');
+    ).populate('group_id', 'groupName');
   }
 
   static async deleteProduct(id) {

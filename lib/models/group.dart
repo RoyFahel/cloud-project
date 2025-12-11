@@ -1,18 +1,18 @@
-class Category {
+class Group {
   final String? id;
-  final String categoryName;
+  final String groupName;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  Category({
+  Group({
     this.id,
-    required this.categoryName,
+    required this.groupName,
     this.createdAt,
     this.updatedAt,
   });
 
   // Convert from JSON (MongoDB response)
-  factory Category.fromJson(Map<String, dynamic> json) {
+  factory Group.fromJson(Map<String, dynamic> json) {
     String? extractId() {
       final idField = json['_id'] ?? json['id'];
       if (idField == null) return null;
@@ -26,9 +26,9 @@ class Category {
       return idField.toString();
     }
 
-    return Category(
+    return Group(
       id: extractId(),
-      categoryName: json['categoryName'] ?? '',
+      groupName: json['groupName'] ?? '',
       createdAt: json['createdAt'] != null 
           ? DateTime.parse(json['createdAt'])
           : null,
@@ -41,7 +41,7 @@ class Category {
   // Convert to JSON (for MongoDB request)
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {
-      'categoryName': categoryName,
+      'groupName': groupName,
       
     };
     
@@ -53,15 +53,15 @@ class Category {
   }
 
   // Copy with method for immutable updates
-  Category copyWith({
+  Group copyWith({
     String? id,
-    String? categoryName,
+    String? groupName,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return Category(
+    return Group(
       id: id ?? this.id,
-      categoryName: categoryName ?? this.categoryName,
+      groupName: groupName ?? this.groupName,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -69,13 +69,13 @@ class Category {
 
   @override
   String toString() {
-    return 'Category(id: $id, categoryName: $categoryName)';
+    return 'Group(id: $id, groupName: $groupName)';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is Category && other.id == id;
+    return other is Group && other.id == id;
   }
 
   @override

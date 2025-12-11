@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Product = require('./models/Product');
-const Category = require('./models/Category');
+const Group = require('./models/Group');
 
 // MongoDB connection string
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/fitx';

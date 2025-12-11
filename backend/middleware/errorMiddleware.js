@@ -33,7 +33,7 @@ const notFoundHandler = (req, res) => {
     availableRoutes: [
       '/health',
       '/api/customers',
-      '/api/categories', 
+      '/api/groups', 
       '/api/products',
       '/api/orders'
     ]

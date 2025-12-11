@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/customer.dart';
-import '../models/category.dart';
+import '../models/group.dart';
 import '../models/product.dart';
 import '../models/order.dart';
 
@@ -122,32 +122,32 @@ class ApiService {
   }
 
 
-  static Future<List<Category>> getCategories() async {
+  static Future<List<Group>> getGroups() async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/api/categories'),
+        Uri.parse('$baseUrl/api/groups'),
         headers: {'Content-Type': 'application/json'},
       );
 
       if (response.statusCode == 200) {
         final dynamic decoded = json.decode(response.body);
-        final List<dynamic> categoriesData;
+        final List<dynamic> groupsData;
         
         if (decoded is Map<String, dynamic>) {
-          categoriesData = decoded['categories'] as List<dynamic>;
+          groupsData = decoded['groups'] as List<dynamic>;
         } else if (decoded is List<dynamic>) {
-          categoriesData = decoded;
+          groupsData = decoded;
         } else {
           throw Exception('Unexpected response format');
         }
         
-        return categoriesData.map((json) => Category.fromJson(json)).toList();
+        return groupsData.map((json) => Group.fromJson(json)).toList();
       } else {
         final errorData = json.decode(response.body);
-        throw Exception('Failed to load categories: ${errorData['error'] ?? response.statusCode}');
+        throw Exception('Failed to load groups: ${errorData['error'] ?? response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error fetching categories: $e');
+      throw Exception('Error fetching groups: $e');
     }
   }
 
@@ -183,11 +183,11 @@ class ApiService {
     }
   }
 
-  // Get products by category ID
-  static Future<List<Product>> getProductsByCategory(String categoryId) async {
+  // Get products by group ID
+  static Future<List<Product>> getProductsByGroup(String groupId) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/api/products/category/$categoryId'),
+        Uri.parse('$baseUrl/api/products/group/$groupId'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -200,36 +200,36 @@ class ApiService {
         throw Exception('Failed to load products: ${errorData['error'] ?? response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error fetching products for category: $e');
+      throw Exception('Error fetching products for group: $e');
     }
   }
 
 
-  static Future<Category> createCategory(Map<String, dynamic> categoryData) async {
+  static Future<Group> createGroup(Map<String, dynamic> groupData) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/api/categories'),
+        Uri.parse('$baseUrl/api/groups'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode(categoryData),
+        body: json.encode(groupData),
       );
 
       if (response.statusCode == 201) {
         final data = json.decode(response.body);
-        return Category.fromJson(data['category'] ?? data);
+        return Group.fromJson(data['group'] ?? data);
       } else {
         final errorData = json.decode(response.body);
-        throw Exception('Failed to create category: ${errorData['error'] ?? response.statusCode}');
+        throw Exception('Failed to create group: ${errorData['error'] ?? response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error creating category: $e');
+      throw Exception('Error creating group: $e');
     }
   }
 
-  // Delete category
-  static Future<bool> deleteCategory(String id) async {
+  // Delete group
+  static Future<bool> deleteGroup(String id) async {
     try {
       final response = await http.delete(
-        Uri.parse('$baseUrl/api/categories/$id'),
+        Uri.parse('$baseUrl/api/groups/$id'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -237,10 +237,10 @@ class ApiService {
         return true;
       } else {
         final errorData = json.decode(response.body);
-        throw Exception('Failed to delete category: ${errorData['error'] ?? response.statusCode}');
+        throw Exception('Failed to delete group: ${errorData['error'] ?? response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error deleting category: $e');
+      throw Exception('Error deleting group: $e');
     }
   }
 

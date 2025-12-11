@@ -2,8 +2,8 @@ class Product {
   final String? id;
   final String productName;
   final String description;
-  final String? categoryId;
-  final String? categoryName; // For populated responses
+  final String? groupId;
+  final String? groupName; // For populated responses
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -11,8 +11,8 @@ class Product {
     this.id,
     required this.productName,
     required this.description,
-    this.categoryId,
-    this.categoryName,
+    this.groupId,
+    this.groupName,
     this.createdAt,
     this.updatedAt,
   });
@@ -32,13 +32,13 @@ class Product {
       return idField.toString();
     }
 
-    String? extractCategoryId() {
-      final categoryField = json['category_id'];
-      if (categoryField == null) return null;
+    String? extractGroupId() {
+      final groupField = json['group_id'];
+      if (groupField == null) return null;
       
-      // Handle populated category object
-      if (categoryField is Map<String, dynamic>) {
-        final idField = categoryField['_id'] ?? categoryField['id'];
+      // Handle populated group object
+      if (groupField is Map<String, dynamic>) {
+        final idField = groupField['_id'] ?? groupField['id'];
         if (idField is Map<String, dynamic> && idField.containsKey('\$oid')) {
           return idField['\$oid']?.toString();
         }
@@ -46,17 +46,17 @@ class Product {
       }
       
       // Handle ObjectId format
-      if (categoryField is Map<String, dynamic> && categoryField.containsKey('\$oid')) {
-        return categoryField['\$oid']?.toString();
+      if (groupField is Map<String, dynamic> && groupField.containsKey('\$oid')) {
+        return groupField['\$oid']?.toString();
       }
       
-      return categoryField.toString();
+      return groupField.toString();
     }
 
-    String? extractCategoryName() {
-      final categoryField = json['category_id'];
-      if (categoryField is Map<String, dynamic>) {
-        return categoryField['categoryName']?.toString();
+    String? extractGroupName() {
+      final groupField = json['group_id'];
+      if (groupField is Map<String, dynamic>) {
+        return groupField['groupName']?.toString();
       }
       return null;
     }
@@ -65,8 +65,8 @@ class Product {
       id: extractId(),
       productName: json['productName'] ?? '',
       description: json['description'] ?? '',
-      categoryId: extractCategoryId(),
-      categoryName: extractCategoryName(),
+      groupId: extractGroupId(),
+      groupName: extractGroupName(),
       createdAt: json['createdAt'] != null 
           ? DateTime.parse(json['createdAt'])
           : null,
@@ -83,7 +83,7 @@ class Product {
       'description': description,
     };
     
-    if (categoryId != null) data['category_id'] = categoryId;
+    if (groupId != null) data['group_id'] = groupId;
     if (id != null) data['_id'] = id;
     if (createdAt != null) data['createdAt'] = createdAt!.toIso8601String();
     if (updatedAt != null) data['updatedAt'] = updatedAt!.toIso8601String();
@@ -96,8 +96,8 @@ class Product {
     String? id,
     String? productName,
     String? description,
-    String? categoryId,
-    String? categoryName,
+    String? groupId,
+    String? groupName,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -105,8 +105,8 @@ class Product {
       id: id ?? this.id,
       productName: productName ?? this.productName,
       description: description ?? this.description,
-      categoryId: categoryId ?? this.categoryId,
-      categoryName: categoryName ?? this.categoryName,
+      groupId: groupId ?? this.groupId,
+      groupName: groupName ?? this.groupName,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -114,7 +114,7 @@ class Product {
 
   @override
   String toString() {
-    return 'Product(id: $id, productName: $productName, categoryName: $categoryName)';
+    return 'Product(id: $id, productName: $productName, groupName: $groupName)';
   }
 
   @override
