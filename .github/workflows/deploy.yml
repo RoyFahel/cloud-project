@@ -1,4 +1,4 @@
-name: Deploy Fitx Full-Stack App
+name: Deploy Fitx Full-Stack Appp
 
 on:
   push:
