@@ -1,4 +1,4 @@
-name: Deploy PharmaX Full-Stack App
+name: Deploy Fitx Full-Stack App
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
     - name: Create backend deployment package
       run: |
         cd backend
-        zip -r ../pharmax-backend.zip . -x "node_modules/*" "*.zip" "*.log" ".git/*"
+        zip -r ../fitx-backend.zip . -x "node_modules/*" "*.zip" "*.log" ".git/*"
 
     - name: Clean up old deployment versions
       run: |
@@ -26,13 +26,13 @@ jobs:
         
         # List and delete old versions (keep only latest 5)
         aws elasticbeanstalk describe-application-versions \
-          --application-name testing \
+          --application-name nodejsapp \
           --query 'ApplicationVersions[5:].VersionLabel' \
           --output text | tr '\t' '\n' | while read version; do
             if [ ! -z "$version" ]; then
               echo "Deleting old version: $version"
               aws elasticbeanstalk delete-application-version \
-                --application-name testing \
+                --application-name nodejsapp \
                 --version-label "$version" \
                 --delete-source-bundle || true
             fi
@@ -43,11 +43,11 @@ jobs:
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        region: ap-southeast-1
-        application_name: myweb
-        environment_name: Myweb-env
+        region: eu-north-1
+        application_name: nodejsapp
+        environment_name: nodejsapp-env
         version_label: backend-${{ github.run_number }}-${{ github.sha }}
-        deployment_package: pharmax-backend.zip
+        deployment_package: fitxx-backend.zip
         wait_for_deployment: true
 
 
@@ -75,12 +75,12 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-southeast-1
+        aws-region: eu-north-1
 
     - name: Deploy Frontend to S3
       run: |
-        aws s3 sync build/web/ s3://websitelb01 --delete
+        aws s3 sync build/web/ s3://roy-frontend-website --delete
         
     - name: Output Frontend URL
       run: |
-        echo "🚀 Frontend deployed to:  http://websitelb01.s3-website-ap-southeast-1.amazonaws.com"
+        echo "🚀 Frontend deployed to:  http://roy-frontend-website.s3-website.eu-north-1.amazonaws.com"
