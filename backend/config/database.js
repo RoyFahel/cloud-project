@@ -16,7 +16,7 @@ const connectToMongoDB = async () => {
    catch (err) {
     console.error('❌ MongoDB connection error:', err.message);
     console.log('⚠️ Continuing without database connection...');
-    // Don't crash the app if MongoDB fails
+    // Don't crash the app if MongoDB fail
     return false;
   }
   return true;
