@@ -6,7 +6,7 @@ import '../models/medicament.dart';
 import '../models/consultation.dart';
 
 class ApiService {
-  // AWS Elastic Beanstalk URL l
+  // AWS Elastic Beanstalk URL 
   static const String baseUrl = 'http://nodejsapp-env.eba-jjpppfhc.eu-north-1.elasticbeanstalk.com';
   
   // Local development URL
