@@ -15,7 +15,7 @@ const PORT = process.env.PORT ||  8080;
 // CORS configuration
 const corsOptions = {
   origin: [
-    'http://websitelb01.s3-website-ap-southeast-1.amazonaws.com',
+    'http://roy-frontend-website.s3-website.eu-north-1.amazonaws.com',
     'http://localhost:3000',
     'http://localhost:8080',
     'http://127.0.0.1:3000'
@@ -32,7 +32,7 @@ app.options('*', cors(corsOptions));
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   const allowedOrigins = [
-    'http://websitelb01.s3-website-ap-southeast-1.amazonaws.com',
+    'http://roy-frontend-website.s3-website.eu-north-1.amazonaws.com',
     'http://localhost:3000',
     'http://localhost:8080',
     'http://127.0.0.1:3000'
@@ -69,7 +69,7 @@ connectToMongoDB().then(() => {
 app.get('/', (req, res) => {
   res.status(200).json({
     status: 'OK',
-    message: 'PharmaX API Server is running',
+    message: 'fitx API Server is running',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
     endpoints: [
@@ -86,13 +86,13 @@ app.get('/', (req, res) => {
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
-    message: 'PharmaX Server is running',
+    message: 'fitx Server is running',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development'
   });
 });
 app.get('/db-info', (req, res) => {
-  const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/pharmax';
+  const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/fitx';
   res.json({
     mongoUri: uri,
     environment: process.env.NODE_ENV || 'development'

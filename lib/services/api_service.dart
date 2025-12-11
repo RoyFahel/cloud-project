@@ -7,7 +7,7 @@ import '../models/consultation.dart';
 
 class ApiService {
   // AWS Elastic Beanstalk URL l
-  static const String baseUrl = 'http://myweb-env.eba-mgqki3fm.ap-southeast-1.elasticbeanstalk.com';
+  static const String baseUrl = 'http://nodejsapp-env.eba-jjpppfhc.eu-north-1.elasticbeanstalk.com';
   
   // Local development URL
   // static const String baseUrl = 'http://localhost:3000/api';

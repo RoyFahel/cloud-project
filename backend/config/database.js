@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 // config/database.js
 
 const connectToMongoDB = async () => {
-  const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/pharmax';
+  const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/fitx';
 
   console.log('🔌 Connecting to MongoDB:', uri);
 
