@@ -21,7 +21,7 @@ class FitXApp extends StatelessWidget {
           create: (context) => CustomerProvider()..initializeConnection(),
         ),
         ChangeNotifierProvider(
-          create: (context) => ConsultationProvider(),
+          create: (context) => OrderProvider(),
         ),
       ],
       child: MaterialApp(
