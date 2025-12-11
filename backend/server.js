@@ -4,10 +4,10 @@ const connectToMongoDB = require('./config/database');
 const mongoose = require('mongoose');
 
 
-const patientRoutes = require('./routes/patients');
-const maladyRoutes = require('./routes/maladies');
-const medicamentRoutes = require('./routes/medicaments');
-const consultationRoutes = require('./routes/consultations');
+const customerRoutes = require('./routes/customers');
+const categoryRoutes = require('./routes/categories');
+const productRoutes = require('./routes/products');
+const orderRoutes = require('./routes/orders');
 
 const app = express();
 const PORT = process.env.PORT ||  8080;
@@ -54,10 +54,10 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-app.use('/api/patients', patientRoutes);
-app.use('/api/maladies', maladyRoutes);
-app.use('/api/medicaments', medicamentRoutes);
-app.use('/api/consultations', consultationRoutes);
+app.use('/api/customers', customerRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
 
 
 
@@ -75,10 +75,10 @@ app.get('/', (req, res) => {
     endpoints: [
       '/health',
       '/db-info',
-      '/api/patients',
-      '/api/maladies',
-      '/api/medicaments',
-      '/api/consultations'
+      '/api/customers',
+      '/api/categories',
+      '/api/products',
+      '/api/orders'
     ]
   });
 });

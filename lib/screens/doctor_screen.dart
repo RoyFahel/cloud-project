@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/consultation_provider.dart';
+import '../providers/order_provider.dart';
 import 'package:email_validator/email_validator.dart';
 
 class DoctorScreen extends StatefulWidget {
@@ -16,18 +16,18 @@ class _DoctorScreenState extends State<DoctorScreen> {
   final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
 
-  String? _selectedMaladyId;
-  String? _selectedMedicamentId;
+  String? _selectedCategoryId;
+  String? _selectedProductId;
   bool _isSubmitting = false;
 
   @override
   void initState() {
     super.initState();
-    // Initialize consultation provider data
+    // Initialize order provider data
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final consultationProvider =
-          Provider.of<ConsultationProvider>(context, listen: false);
-      consultationProvider.initialize();
+      final orderProvider =
+          Provider.of<OrderProvider>(context, listen: false);
+      orderProvider.initialize();
     });
   }
 
@@ -40,11 +40,11 @@ class _DoctorScreenState extends State<DoctorScreen> {
     super.dispose();
   }
 
-  void _onMaladyChanged(String? maladyId) {
-    if (maladyId != null) {
+  void _onCategoryChanged(String? categoryId) {
+    if (categoryId != null) {
       setState(() {
-        _selectedMaladyId = maladyId;
-        _selectedMedicamentId = null;
+        _selectedCategoryId = categoryId;
+        _selectedProductId = null;
       });
     }
   }
@@ -54,12 +54,12 @@ class _DoctorScreenState extends State<DoctorScreen> {
       return;
     }
 
-    if (_selectedMaladyId == null) {
+    if (_selectedCategoryId == null) {
       _showErrorDialog('Please select a product category');
       return;
     }
 
-    if (_selectedMedicamentId == null) {
+    if (_selectedProductId == null) {
       _showErrorDialog('Please select a product');
       return;
     }
@@ -69,28 +69,28 @@ class _DoctorScreenState extends State<DoctorScreen> {
     });
 
     try {
-      final consultationProvider =
-          Provider.of<ConsultationProvider>(context, listen: false);
+      final orderProvider =
+          Provider.of<OrderProvider>(context, listen: false);
 
-      final patient = await consultationProvider.createPatient(
+      final customer = await orderProvider.createCustomer(
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
         email: _emailController.text.trim(),
       );
 
-      if (patient == null) {
-        throw Exception('Failed to create patient');
+      if (customer == null) {
+        throw Exception('Failed to create customer');
       }
 
-      // Then create the consultation with the patient ID
-      final consultationSuccess = await consultationProvider.createConsultation(
-        patientId: patient.id!,
-        maladyId: _selectedMaladyId!,
-        medicamentId: _selectedMedicamentId!,
+      // Then create the order with the customer ID
+      final orderSuccess = await orderProvider.createOrder(
+        customerId: customer.id!,
+        categoryId: _selectedCategoryId!,
+        productId: _selectedProductId!,
       );
 
-      if (!consultationSuccess) {
-        throw Exception('Failed to create consultation');
+      if (!orderSuccess) {
+        throw Exception('Failed to create order');
       }
 
       if (mounted) {
@@ -336,7 +336,6 @@ class _DoctorScreenState extends State<DoctorScreen> {
 
                 const SizedBox(height: 24),
 
-                // Product Information (was Medical Information)
                 Card(
                   color: cardSurface,
                   elevation: 6,
@@ -359,10 +358,10 @@ class _DoctorScreenState extends State<DoctorScreen> {
                         const SizedBox(height: 20),
 
                         // Product Category Dropdown (was Type of Illness)
-                        Consumer<ConsultationProvider>(
-                          builder: (context, consultationProvider, child) {
+                        Consumer<OrderProvider>(
+                          builder: (context, orderProvider, child) {
                             return DropdownButtonFormField<String>(
-                              value: _selectedMaladyId,
+                              value: _selectedCategoryId,
                               dropdownColor: Colors.grey[850],
                               decoration: InputDecoration(
                                 labelText: 'Product Category',
@@ -375,15 +374,15 @@ class _DoctorScreenState extends State<DoctorScreen> {
                                 border: const OutlineInputBorder(),
                               ),
                               items:
-                                  consultationProvider.maladies.map((malady) {
+                                  orderProvider.categories.map((category) {
                                 return DropdownMenuItem<String>(
-                                  value: malady.id,
-                                  child: Text(malady.maladyName,
+                                  value: category.id,
+                                  child: Text(category.categoryName,
                                       style:
                                           const TextStyle(color: Colors.white)),
                                 );
                               }).toList(),
-                              onChanged: _onMaladyChanged,
+                              onChanged: _onCategoryChanged,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Please select a product category';
@@ -396,11 +395,10 @@ class _DoctorScreenState extends State<DoctorScreen> {
 
                         const SizedBox(height: 16),
 
-                        // Product Dropdown (was Prescribed Medication)
-                        Consumer<ConsultationProvider>(
-                          builder: (context, consultationProvider, child) {
+                        Consumer<OrderProvider>(
+                          builder: (context, orderProvider, child) {
                             return DropdownButtonFormField<String>(
-                              value: _selectedMedicamentId,
+                              value: _selectedProductId,
                               dropdownColor: Colors.grey[850],
                               decoration: InputDecoration(
                                 labelText: 'Product',
@@ -412,13 +410,13 @@ class _DoctorScreenState extends State<DoctorScreen> {
                                 fillColor: Colors.grey[900],
                                 border: const OutlineInputBorder(),
                               ),
-                              items: consultationProvider
-                                  .getMedicamentsForMalady(
-                                      _selectedMaladyId ?? '')
-                                  .map((medicament) {
+                              items: orderProvider
+                                  .getProductsForCategory(
+                                      _selectedCategoryId ?? '')
+                                  .map((product) {
                                 return DropdownMenuItem<String>(
-                                  value: medicament.id,
-                                  child: Text(medicament.medicamentName,
+                                  value: product.id,
+                                  child: Text(product.productName,
                                       style:
                                           const TextStyle(color: Colors.white)),
                                 );
@@ -426,7 +424,7 @@ class _DoctorScreenState extends State<DoctorScreen> {
                               onChanged: (value) {
                                 if (value != null) {
                                   setState(() {
-                                    _selectedMedicamentId = value;
+                                    _selectedProductId = value;
                                   });
                                 }
                               },

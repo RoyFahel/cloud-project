@@ -1,18 +1,22 @@
-class Malady {
+class Customer {
   final String? id;
-  final String maladyName;
+  final String firstName;
+  final String lastName;
+  final String email;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  Malady({
+  Customer({
     this.id,
-    required this.maladyName,
+    required this.firstName,
+    required this.lastName,
+    required this.email,
     this.createdAt,
     this.updatedAt,
   });
 
   // Convert from JSON (MongoDB response)
-  factory Malady.fromJson(Map<String, dynamic> json) {
+  factory Customer.fromJson(Map<String, dynamic> json) {
     String? extractId() {
       final idField = json['_id'] ?? json['id'];
       if (idField == null) return null;
@@ -26,23 +30,26 @@ class Malady {
       return idField.toString();
     }
 
-    return Malady(
+    return Customer(
       id: extractId(),
-      maladyName: json['maladyName'] ?? '',
+      firstName: json['firstName'] ?? '',
+      lastName: json['lastName'] ?? '',
+      email: json['email'] ?? '',
       createdAt: json['createdAt'] != null 
           ? DateTime.parse(json['createdAt'])
-          : null,
+          : DateTime.now(),
       updatedAt: json['updatedAt'] != null 
           ? DateTime.parse(json['updatedAt'])
-          : null,
+          : DateTime.now(),
     );
   }
 
-  // Convert to JSON (for MongoDB request)
+ 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {
-      'maladyName': maladyName,
-      
+      'firstName': firstName,
+      'lastName': lastName,
+      'email': email,
     };
     
     if (id != null) data['_id'] = id;
@@ -52,16 +59,29 @@ class Malady {
     return data;
   }
 
-  // Copy with method for immutable updates
-  Malady copyWith({
+  
+  Map<String, dynamic> toJsonForUpdate() {
+    return {
+      'firstName': firstName,
+      'lastName': lastName,
+      'email': email,
+      'updatedAt': DateTime.now().toIso8601String(),
+    };
+  }
+
+  Customer copyWith({
     String? id,
-    String? maladyName,
+    String? firstName,
+    String? lastName,
+    String? email,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return Malady(
+    return Customer(
       id: id ?? this.id,
-      maladyName: maladyName ?? this.maladyName,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      email: email ?? this.email,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -69,13 +89,13 @@ class Malady {
 
   @override
   String toString() {
-    return 'Malady(id: $id, maladyName: $maladyName)';
+    return 'Customer(id: $id, firstName: $firstName, lastName: $lastName, email: $email)';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is Malady && other.id == id;
+    return other is Customer && other.id == id;
   }
 
   @override

@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
-const maladySchema = new mongoose.Schema({
-  maladyName: {
+const categorySchema = new mongoose.Schema({
+  categoryName: {
     type: String,
-    required: [true, 'Malady name is required'],
+    required: [true, 'Category name is required'],
     unique: true,
     trim: true
   },
@@ -15,4 +15,4 @@ const maladySchema = new mongoose.Schema({
   timestamps: true
 });
 
-module.exports = mongoose.model('Malady', maladySchema);
+module.exports = mongoose.model('Category', categorySchema);

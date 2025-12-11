@@ -32,10 +32,10 @@ const notFoundHandler = (req, res) => {
     message: `Route ${req.originalUrl} not found`,
     availableRoutes: [
       '/health',
-      '/api/patients',
-      '/api/maladies', 
-      '/api/medicaments',
-      '/api/consultations'
+      '/api/customers',
+      '/api/categories', 
+      '/api/products',
+      '/api/orders'
     ]
   });
 };

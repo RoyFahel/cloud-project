@@ -1,23 +1,23 @@
 ﻿import "package:flutter/material.dart";
 import 'package:provider/provider.dart';
-import '../providers/consultation_provider.dart';
+import '../providers/order_provider.dart';
 
-class Consultation {
+class Order {
   final String id;
   final String firstName;
   final String lastName;
   final String email;
-  String maladyName;
-  List<String> medicaments;
+  String categoryName;
+  List<String> products;
   bool isDeleted;
 
-  Consultation({
+  Order({
     required this.id,
     required this.firstName,
     required this.lastName,
     required this.email,
-    required this.maladyName,
-    required this.medicaments,
+    required this.categoryName,
+    required this.products,
     this.isDeleted = false,
   });
 }
@@ -34,35 +34,35 @@ class _AdminScreenState extends State<AdminScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = context.read<ConsultationProvider>();
-      provider.loadMaladies();
-      provider.loadMedicaments();
-      provider.loadConsultations();
+      final provider = context.read<OrderProvider>();
+      provider.loadCategories();
+      provider.loadProducts();
+      provider.loadOrders();
     });
   }
 
-  Future<void> _showIllnessDialog({Consultation? existing}) async {
-    final provider = context.read<ConsultationProvider>();
+  Future<void> _showIllnessDialog({Order? existing}) async {
+    final provider = context.read<OrderProvider>();
     final formKey = GlobalKey<FormState>();
 
-    // For adding new category (malady)
-    final maladyNameController = TextEditingController();
+    // For adding new category (category)
+    final categoryNameController = TextEditingController();
 
-    // For adding new Product item (medicament)
-    final medicamentNameController = TextEditingController();
+    // For adding new Product item (product)
+    final productNameController = TextEditingController();
 
-    String? selectedMaladyId;
+    String? selectedCategoryId;
 
     // For editing existing
-    final illnessController = TextEditingController(text: existing?.maladyName ?? "");
-    final List<TextEditingController> medicamentControllers = [];
+    final illnessController = TextEditingController(text: existing?.categoryName ?? "");
+    final List<TextEditingController> productControllers = [];
 
-    if (existing != null && existing.medicaments.isNotEmpty) {
-      for (final med in existing.medicaments) {
-        medicamentControllers.add(TextEditingController(text: med));
+    if (existing != null && existing.products.isNotEmpty) {
+      for (final med in existing.products) {
+        productControllers.add(TextEditingController(text: med));
       }
     } else {
-      medicamentControllers.add(TextEditingController());
+      productControllers.add(TextEditingController());
     }
 
     final accent = Colors.amber;
@@ -96,7 +96,7 @@ class _AdminScreenState extends State<AdminScreen> {
                           ),
                           const SizedBox(height: 8),
                           TextFormField(
-                            controller: maladyNameController,
+                            controller: categoryNameController,
                             style: TextStyle(color: onSurface),
                             decoration: InputDecoration(
                               labelText: "Category Name",
@@ -114,7 +114,7 @@ class _AdminScreenState extends State<AdminScreen> {
                               Expanded(
                                 child: ElevatedButton.icon(
                                   onPressed: () async {
-                                    if (maladyNameController.text.trim().isEmpty) {
+                                    if (categoryNameController.text.trim().isEmpty) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(
                                           content: Text('Please fill in category name'),
@@ -124,12 +124,12 @@ class _AdminScreenState extends State<AdminScreen> {
                                       return;
                                     }
 
-                                    final success = await provider.createMalady(
-                                      maladyName: maladyNameController.text.trim(),
+                                    final success = await provider.createCategory(
+                                      categoryName: categoryNameController.text.trim(),
                                     );
 
                                     if (success) {
-                                      maladyNameController.clear();
+                                      categoryNameController.clear();
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(
                                           content: Text('Category added to database!'),
@@ -167,7 +167,7 @@ class _AdminScreenState extends State<AdminScreen> {
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: onSurface),
                           ),
                           const SizedBox(height: 8),
-                          if (provider.maladies.isEmpty)
+                          if (provider.categories.isEmpty)
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
@@ -178,7 +178,7 @@ class _AdminScreenState extends State<AdminScreen> {
                           else ...[
                             DropdownButtonFormField<String>(
                               dropdownColor: surface,
-                              value: selectedMaladyId ?? provider.maladies.first.id,
+                              value: selectedCategoryId ?? provider.categories.first.id,
                               decoration: InputDecoration(
                                 labelText: 'Related Category',
                                 labelStyle: TextStyle(color: accent),
@@ -186,21 +186,21 @@ class _AdminScreenState extends State<AdminScreen> {
                                 filled: true,
                                 fillColor: Colors.grey[850],
                               ),
-                              items: provider.maladies.map((malady) {
+                              items: provider.categories.map((category) {
                                 return DropdownMenuItem(
-                                  value: malady.id,
-                                  child: Text(malady.maladyName, style: TextStyle(color: onSurface)),
+                                  value: category.id,
+                                  child: Text(category.categoryName, style: TextStyle(color: onSurface)),
                                 );
                               }).toList(),
                               onChanged: (value) {
                                 setStateDialog(() {
-                                  selectedMaladyId = value;
+                                  selectedCategoryId = value;
                                 });
                               },
                             ),
                             const SizedBox(height: 8),
                             TextFormField(
-                              controller: medicamentNameController,
+                              controller: productNameController,
                               style: TextStyle(color: onSurface),
                               decoration: InputDecoration(
                                 labelText: "Product Name",
@@ -215,7 +215,7 @@ class _AdminScreenState extends State<AdminScreen> {
                             const SizedBox(height: 8),
                             ElevatedButton.icon(
                               onPressed: () async {
-                                if (medicamentNameController.text.trim().isEmpty) {
+                                if (productNameController.text.trim().isEmpty) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text('Please fill in Product name'),
@@ -225,13 +225,13 @@ class _AdminScreenState extends State<AdminScreen> {
                                   return;
                                 }
 
-                                final success = await provider.createMedicament(
-                                  medicamentName: medicamentNameController.text.trim(),
-                                  maladyId: (selectedMaladyId ?? provider.maladies.first.id)!,
+                                final success = await provider.createProduct(
+                                  productName: productNameController.text.trim(),
+                                  categoryId: (selectedCategoryId ?? provider.categories.first.id)!,
                                 );
 
                                 if (success) {
-                                  medicamentNameController.clear();
+                                  productNameController.clear();
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text('Product added to database!'),
@@ -258,7 +258,7 @@ class _AdminScreenState extends State<AdminScreen> {
                             ),
                           ],
                         ] else ...[
-                          // Edit existing consultation (edit category + product fields)
+                          // Edit existing order (edit category + product fields)
                           TextFormField(
                             controller: illnessController,
                             style: TextStyle(color: onSurface),
@@ -279,11 +279,11 @@ class _AdminScreenState extends State<AdminScreen> {
                           const SizedBox(height: 12),
                           Column(
                             children: List.generate(
-                              medicamentControllers.length,
+                              productControllers.length,
                               (index) => Padding(
                                 padding: const EdgeInsets.only(bottom: 8.0),
                                 child: TextFormField(
-                                  controller: medicamentControllers[index],
+                                  controller: productControllers[index],
                                   style: TextStyle(color: onSurface),
                                   decoration: InputDecoration(
                                     labelText: "Product ${index + 1}",
@@ -307,7 +307,7 @@ class _AdminScreenState extends State<AdminScreen> {
                             child: TextButton.icon(
                               onPressed: () {
                                 setStateDialog(() {
-                                  medicamentControllers.add(TextEditingController());
+                                  productControllers.add(TextEditingController());
                                 });
                               },
                               icon: const Icon(Icons.add, color: Colors.amber),
@@ -331,14 +331,14 @@ class _AdminScreenState extends State<AdminScreen> {
                       if (!formKey.currentState!.validate()) return;
 
                       final illness = illnessController.text.trim();
-                      final meds = medicamentControllers
+                      final meds = productControllers
                           .map((c) => c.text.trim())
                           .where((m) => m.isNotEmpty)
                           .toList();
 
                       setState(() {
-                        existing.maladyName = illness;
-                        existing.medicaments = meds;
+                        existing.categoryName = illness;
+                        existing.products = meds;
                       });
 
                       Navigator.of(ctx).pop();
@@ -378,7 +378,7 @@ class _AdminScreenState extends State<AdminScreen> {
           ),
         ],
       ),
-      body: Consumer<ConsultationProvider>(
+      body: Consumer<OrderProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -427,7 +427,7 @@ class _AdminScreenState extends State<AdminScreen> {
     );
   }
 
-  Widget _buildCategoriesCard(ConsultationProvider provider, Color cardSurface, Color accent, Color onSurface) {
+  Widget _buildCategoriesCard(OrderProvider provider, Color cardSurface, Color accent, Color onSurface) {
     return Card(
       color: cardSurface,
       elevation: 6,
@@ -450,7 +450,7 @@ class _AdminScreenState extends State<AdminScreen> {
                   ),
                 ]),
                 Text(
-                  "${provider.maladies.length} items",
+                  "${provider.categories.length} items",
                   style: TextStyle(color: Colors.grey[400], fontSize: 13),
                 ),
               ],
@@ -459,7 +459,7 @@ class _AdminScreenState extends State<AdminScreen> {
             const SizedBox(height: 8),
             SizedBox(
               height: 220,
-              child: provider.maladies.isEmpty
+              child: provider.categories.isEmpty
                   ? Center(
                       child: Text(
                         "No categories added yet.\nClick 'Add to Catalog' to add.",
@@ -468,17 +468,17 @@ class _AdminScreenState extends State<AdminScreen> {
                       ),
                     )
                   : ListView.separated(
-                      itemCount: provider.maladies.length,
+                      itemCount: provider.categories.length,
                       separatorBuilder: (_, __) => const Divider(color: Colors.grey),
                       itemBuilder: (context, index) {
-                        final malady = provider.maladies[index];
+                        final category = provider.categories[index];
                         return ListTile(
                           contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
                           leading: CircleAvatar(
                             backgroundColor: Colors.grey[800],
                             child: Icon(Icons.category, color: accent),
                           ),
-                          title: Text(malady.maladyName, style: TextStyle(color: onSurface)),
+                          title: Text(category.categoryName, style: TextStyle(color: onSurface)),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () async {
@@ -488,7 +488,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                   backgroundColor: Colors.grey[900],
                                   title: Text("Delete Category", style: TextStyle(color: onSurface)),
                                   content: Text(
-                                    "Delete '${malady.maladyName}'?\n\nThis will also delete all related Product items.",
+                                    "Delete '${category.categoryName}'?\n\nThis will also delete all related Product items.",
                                     style: TextStyle(color: Colors.grey[300]),
                                   ),
                                   actions: [
@@ -505,11 +505,11 @@ class _AdminScreenState extends State<AdminScreen> {
                                 ),
                               );
 
-                              if (confirmed == true && malady.id != null) {
-                                final success = await provider.deleteMalady(malady.id!);
+                              if (confirmed == true && category.id != null) {
+                                final success = await provider.deleteCategory(category.id!);
                                 if (success && mounted) {
-                                  // Reload medicaments to remove those related to deleted malady
-                                  await provider.loadMedicaments();
+                                  // Reload products to remove those related to deleted category
+                                  await provider.loadProducts();
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text('Category deleted successfully'),
@@ -530,7 +530,7 @@ class _AdminScreenState extends State<AdminScreen> {
     );
   }
 
-  Widget _buildProductsCard(ConsultationProvider provider, Color cardSurface, Color accent, Color onSurface) {
+  Widget _buildProductsCard(OrderProvider provider, Color cardSurface, Color accent, Color onSurface) {
     return Card(
       color: cardSurface,
       elevation: 6,
@@ -553,7 +553,7 @@ class _AdminScreenState extends State<AdminScreen> {
                   ),
                 ]),
                 Text(
-                  "${provider.medicaments.length} items",
+                  "${provider.products.length} items",
                   style: TextStyle(color: Colors.grey[400], fontSize: 13),
                 ),
               ],
@@ -562,7 +562,7 @@ class _AdminScreenState extends State<AdminScreen> {
             const SizedBox(height: 8),
             SizedBox(
               height: 220,
-              child: provider.medicaments.isEmpty
+              child: provider.products.isEmpty
                   ? Center(
                       child: Text(
                         "No products added yet.\nClick 'Add to Catalog' to add.",
@@ -571,16 +571,16 @@ class _AdminScreenState extends State<AdminScreen> {
                       ),
                     )
                   : ListView.separated(
-                      itemCount: provider.medicaments.length,
+                      itemCount: provider.products.length,
                       separatorBuilder: (_, __) => const Divider(color: Colors.grey),
                       itemBuilder: (context, index) {
-                        final medicament = provider.medicaments[index];
+                        final product = provider.products[index];
 
                         // Find the category name, handle case where category might not exist
-                        String maladyName = 'Unknown';
+                        String categoryName = 'Unknown';
                         try {
-                          final malady = provider.maladies.firstWhere((m) => m.id == medicament.maladyId);
-                          maladyName = malady.maladyName;
+                          final category = provider.categories.firstWhere((m) => m.id == product.categoryId);
+                          categoryName = category.categoryName;
                         } catch (e) {
                           // ignore
                         }
@@ -591,8 +591,8 @@ class _AdminScreenState extends State<AdminScreen> {
                             backgroundColor: Colors.grey[800],
                             child: Icon(Icons.fitness_center, color: accent),
                           ),
-                          title: Text(medicament.medicamentName, style: TextStyle(color: onSurface)),
-                          subtitle: Text('Category: $maladyName', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                          title: Text(product.productName, style: TextStyle(color: onSurface)),
+                          subtitle: Text('Category: $categoryName', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () async {
@@ -602,7 +602,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                   backgroundColor: Colors.grey[900],
                                   title: Text("Delete Product", style: TextStyle(color: onSurface)),
                                   content: Text(
-                                    "Delete '${medicament.medicamentName}'?",
+                                    "Delete '${product.productName}'?",
                                     style: TextStyle(color: Colors.grey[300]),
                                   ),
                                   actions: [
@@ -619,8 +619,8 @@ class _AdminScreenState extends State<AdminScreen> {
                                 ),
                               );
 
-                              if (confirmed == true && medicament.id != null) {
-                                final success = await provider.deleteMedicament(medicament.id!);
+                              if (confirmed == true && product.id != null) {
+                                final success = await provider.deleteProduct(product.id!);
                                 if (success && mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
@@ -642,7 +642,7 @@ class _AdminScreenState extends State<AdminScreen> {
     );
   }
 
-  Widget _buildSessionsCard(ConsultationProvider provider, Color cardSurface, Color accent, Color onSurface, {int flex = 3}) {
+  Widget _buildSessionsCard(OrderProvider provider, Color cardSurface, Color accent, Color onSurface, {int flex = 3}) {
     return Card(
       color: cardSurface,
       elevation: 6,
@@ -665,7 +665,7 @@ class _AdminScreenState extends State<AdminScreen> {
                   ),
                 ]),
                 Text(
-                  "${provider.consultations.length} records",
+                  "${provider.orders.length} records",
                   style: TextStyle(color: Colors.grey[400], fontSize: 13),
                 ),
               ],
@@ -673,7 +673,7 @@ class _AdminScreenState extends State<AdminScreen> {
             const Divider(color: Colors.grey),
             const SizedBox(height: 8),
             Expanded(
-              child: provider.consultations.isEmpty
+              child: provider.orders.isEmpty
                   ? Center(
                       child: Text(
                         "No sessions recorded yet.",
@@ -720,42 +720,42 @@ class _AdminScreenState extends State<AdminScreen> {
                               ),
                             ),
                           ],
-                          rows: provider.consultations.map((consultation) {
-                            // Get patient info
-                            String patientName = 'Unknown';
-                            String patientEmail = '';
-                            if (consultation.patient != null) {
-                              patientName = '${consultation.patient!['firstName']} ${consultation.patient!['lastName']}';
-                              patientEmail = consultation.patient!['email'] ?? '';
+                          rows: provider.orders.map((order) {
+                            // Get customer info
+                            String customerName = 'Unknown';
+                            String customerEmail = '';
+                            if (order.customer != null) {
+                              customerName = '${order.customer!['firstName']} ${order.customer!['lastName']}';
+                              customerEmail = order.customer!['email'] ?? '';
                             }
 
                             // Get category name
-                            String maladyName = 'Unknown';
-                            if (consultation.malady != null) {
-                              maladyName = consultation.malady!['maladyName'];
+                            String categoryName = 'Unknown';
+                            if (order.category != null) {
+                              categoryName = order.category!['categoryName'];
                             }
 
                             // Get Product name
-                            String medicamentName = 'Unknown';
-                            if (consultation.medicament != null) {
-                              medicamentName = consultation.medicament!['medicamentName'];
+                            String productName = 'Unknown';
+                            if (order.product != null) {
+                              productName = order.product!['productName'];
                             }
 
                             return DataRow(
                               cells: [
                                 DataCell(
                                   Text(
-                                    '${consultation.date.day}/${consultation.date.month}/${consultation.date.year}',
+                                    '${order.date.day}/${order.date.month}/${order.date.year}',
                                     style: const TextStyle(color: Colors.white70),
                                   ),
                                 ),
                                 DataCell(
                                   Text(
-                                    patientName,
+                                    customerName,
                                     style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
                                   ),
                                 ),
-                                DataCell(Text(patientEmail, style: const TextStyle(color: Colors.white70))),
+                                DataCell(Text(customerEmail, style: const TextStyle(color: Colors.white70))),
                                 DataCell(
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -764,7 +764,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Text(
-                                      maladyName,
+                                      categoryName,
                                       style: TextStyle(
                                         color: Colors.amber.shade200,
                                         fontSize: 12,
@@ -780,7 +780,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Text(
-                                      medicamentName,
+                                      productName,
                                       style: TextStyle(
                                         color: Colors.grey[200],
                                         fontSize: 12,

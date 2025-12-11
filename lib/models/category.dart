@@ -1,22 +1,18 @@
-class Patient {
+class Category {
   final String? id;
-  final String firstName;
-  final String lastName;
-  final String email;
+  final String categoryName;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  Patient({
+  Category({
     this.id,
-    required this.firstName,
-    required this.lastName,
-    required this.email,
+    required this.categoryName,
     this.createdAt,
     this.updatedAt,
   });
 
   // Convert from JSON (MongoDB response)
-  factory Patient.fromJson(Map<String, dynamic> json) {
+  factory Category.fromJson(Map<String, dynamic> json) {
     String? extractId() {
       final idField = json['_id'] ?? json['id'];
       if (idField == null) return null;
@@ -30,26 +26,23 @@ class Patient {
       return idField.toString();
     }
 
-    return Patient(
+    return Category(
       id: extractId(),
-      firstName: json['firstName'] ?? '',
-      lastName: json['lastName'] ?? '',
-      email: json['email'] ?? '',
+      categoryName: json['categoryName'] ?? '',
       createdAt: json['createdAt'] != null 
           ? DateTime.parse(json['createdAt'])
-          : DateTime.now(),
+          : null,
       updatedAt: json['updatedAt'] != null 
           ? DateTime.parse(json['updatedAt'])
-          : DateTime.now(),
+          : null,
     );
   }
 
- 
+  // Convert to JSON (for MongoDB request)
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {
-      'firstName': firstName,
-      'lastName': lastName,
-      'email': email,
+      'categoryName': categoryName,
+      
     };
     
     if (id != null) data['_id'] = id;
@@ -59,29 +52,16 @@ class Patient {
     return data;
   }
 
-  
-  Map<String, dynamic> toJsonForUpdate() {
-    return {
-      'firstName': firstName,
-      'lastName': lastName,
-      'email': email,
-      'updatedAt': DateTime.now().toIso8601String(),
-    };
-  }
-
-  Patient copyWith({
+  // Copy with method for immutable updates
+  Category copyWith({
     String? id,
-    String? firstName,
-    String? lastName,
-    String? email,
+    String? categoryName,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return Patient(
+    return Category(
       id: id ?? this.id,
-      firstName: firstName ?? this.firstName,
-      lastName: lastName ?? this.lastName,
-      email: email ?? this.email,
+      categoryName: categoryName ?? this.categoryName,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -89,13 +69,13 @@ class Patient {
 
   @override
   String toString() {
-    return 'Patient(id: $id, firstName: $firstName, lastName: $lastName, email: $email)';
+    return 'Category(id: $id, categoryName: $categoryName)';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is Patient && other.id == id;
+    return other is Category && other.id == id;
   }
 
   @override

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'providers/patient_provider.dart';
-import 'providers/consultation_provider.dart';
+import 'providers/customer_provider.dart';
+import 'providers/order_provider.dart';
 import 'screens/home_screen.dart';
 
 void main() async {
@@ -18,7 +18,7 @@ class FitXApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => PatientProvider()..initializeConnection(),
+          create: (context) => CustomerProvider()..initializeConnection(),
         ),
         ChangeNotifierProvider(
           create: (context) => ConsultationProvider(),

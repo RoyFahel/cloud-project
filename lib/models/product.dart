@@ -1,24 +1,24 @@
-class Medicament {
+class Product {
   final String? id;
-  final String medicamentName;
+  final String productName;
   final String description;
-  final String? maladyId;
-  final String? maladyName; // For populated responses
+  final String? categoryId;
+  final String? categoryName; // For populated responses
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  Medicament({
+  Product({
     this.id,
-    required this.medicamentName,
+    required this.productName,
     required this.description,
-    this.maladyId,
-    this.maladyName,
+    this.categoryId,
+    this.categoryName,
     this.createdAt,
     this.updatedAt,
   });
 
   // Convert from JSON (MongoDB response)
-  factory Medicament.fromJson(Map<String, dynamic> json) {
+  factory Product.fromJson(Map<String, dynamic> json) {
     String? extractId() {
       final idField = json['_id'] ?? json['id'];
       if (idField == null) return null;
@@ -32,13 +32,13 @@ class Medicament {
       return idField.toString();
     }
 
-    String? extractMaladyId() {
-      final maladyField = json['malady_id'];
-      if (maladyField == null) return null;
+    String? extractCategoryId() {
+      final categoryField = json['category_id'];
+      if (categoryField == null) return null;
       
-      // Handle populated malady object
-      if (maladyField is Map<String, dynamic>) {
-        final idField = maladyField['_id'] ?? maladyField['id'];
+      // Handle populated category object
+      if (categoryField is Map<String, dynamic>) {
+        final idField = categoryField['_id'] ?? categoryField['id'];
         if (idField is Map<String, dynamic> && idField.containsKey('\$oid')) {
           return idField['\$oid']?.toString();
         }
@@ -46,27 +46,27 @@ class Medicament {
       }
       
       // Handle ObjectId format
-      if (maladyField is Map<String, dynamic> && maladyField.containsKey('\$oid')) {
-        return maladyField['\$oid']?.toString();
+      if (categoryField is Map<String, dynamic> && categoryField.containsKey('\$oid')) {
+        return categoryField['\$oid']?.toString();
       }
       
-      return maladyField.toString();
+      return categoryField.toString();
     }
 
-    String? extractMaladyName() {
-      final maladyField = json['malady_id'];
-      if (maladyField is Map<String, dynamic>) {
-        return maladyField['maladyName']?.toString();
+    String? extractCategoryName() {
+      final categoryField = json['category_id'];
+      if (categoryField is Map<String, dynamic>) {
+        return categoryField['categoryName']?.toString();
       }
       return null;
     }
 
-    return Medicament(
+    return Product(
       id: extractId(),
-      medicamentName: json['medicamentName'] ?? '',
+      productName: json['productName'] ?? '',
       description: json['description'] ?? '',
-      maladyId: extractMaladyId(),
-      maladyName: extractMaladyName(),
+      categoryId: extractCategoryId(),
+      categoryName: extractCategoryName(),
       createdAt: json['createdAt'] != null 
           ? DateTime.parse(json['createdAt'])
           : null,
@@ -79,11 +79,11 @@ class Medicament {
   // Convert to JSON (for MongoDB request)
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {
-      'medicamentName': medicamentName,
+      'productName': productName,
       'description': description,
     };
     
-    if (maladyId != null) data['malady_id'] = maladyId;
+    if (categoryId != null) data['category_id'] = categoryId;
     if (id != null) data['_id'] = id;
     if (createdAt != null) data['createdAt'] = createdAt!.toIso8601String();
     if (updatedAt != null) data['updatedAt'] = updatedAt!.toIso8601String();
@@ -92,21 +92,21 @@ class Medicament {
   }
 
   // Copy with method for immutable updates
-  Medicament copyWith({
+  Product copyWith({
     String? id,
-    String? medicamentName,
+    String? productName,
     String? description,
-    String? maladyId,
-    String? maladyName,
+    String? categoryId,
+    String? categoryName,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return Medicament(
+    return Product(
       id: id ?? this.id,
-      medicamentName: medicamentName ?? this.medicamentName,
+      productName: productName ?? this.productName,
       description: description ?? this.description,
-      maladyId: maladyId ?? this.maladyId,
-      maladyName: maladyName ?? this.maladyName,
+      categoryId: categoryId ?? this.categoryId,
+      categoryName: categoryName ?? this.categoryName,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -114,13 +114,13 @@ class Medicament {
 
   @override
   String toString() {
-    return 'Medicament(id: $id, medicamentName: $medicamentName, maladyName: $maladyName)';
+    return 'Product(id: $id, productName: $productName, categoryName: $categoryName)';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is Medicament && other.id == id;
+    return other is Product && other.id == id;
   }
 
   @override

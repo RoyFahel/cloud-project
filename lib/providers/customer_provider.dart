@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
-import '../models/patient.dart';
+import '../models/customer.dart';
 import '../services/api_service.dart';
 
-class PatientProvider with ChangeNotifier {
-  List<Patient> _patients = [];
+class CustomerProvider with ChangeNotifier {
+  List<Customer> _customers = [];
   bool _isLoading = false;
   String? _errorMessage;
   Map<String, dynamic>? _statistics;
   bool _isConnected = false;
 
   // Getters
-  List<Patient> get patients => _patients;
+  List<Customer> get customers => _customers;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get hasError => _errorMessage != null;
-  bool get hasData => _patients.isNotEmpty;
+  bool get hasData => _customers.isNotEmpty;
   bool get isConnected => _isConnected;
   Map<String, dynamic>? get statistics => _statistics;
 
   // Initialize and test MongoDB connection
   Future<void> initializeConnection() async {
-    await loadPatients();
+    await loadCustomers();
     
   }
 
@@ -33,7 +33,7 @@ class PatientProvider with ChangeNotifier {
       _clearError();
       
       if (_isConnected) {
-        await loadPatients();
+        await loadCustomers();
       }
     } catch (e) {
       _isConnected = false;
@@ -43,45 +43,45 @@ class PatientProvider with ChangeNotifier {
     }
   }
 
-  // Load all patients from MongoDB
-  Future<void> loadPatients() async {
+  // Load all customers from MongoDB
+  Future<void> loadCustomers() async {
     _setLoading(true);
     try {
-      _patients = await ApiService.getPatients();
+      _customers = await ApiService.getCustomers();
       _isConnected = true;
       _clearError();
-      debugPrint('✅ Successfully loaded ${_patients.length} patients from MongoDB');
+      debugPrint('✅ Successfully loaded ${_customers.length} customers from MongoDB');
     } catch (e) {
       _isConnected = false;
-      _setError('Failed to load patients: $e');
-      debugPrint('❌ Error loading patients: $e');
+      _setError('Failed to load customers: $e');
+      debugPrint('❌ Error loading customers: $e');
     } finally {
       _setLoading(false);
     }
   }
 
-  // Add a new patient to MongoDB
-  Future<bool> addPatient(Patient patient) async {
+  // Add a new customer to MongoDB
+  Future<bool> addCustomer(Customer customer) async {
     _setLoading(true);
     try {
-      debugPrint('🔄 PatientProvider: Starting to add patient: ${patient.firstName} ${patient.lastName}');
-      debugPrint('🔄 PatientProvider: Calling ApiService.createPatient...');
+      debugPrint('🔄 CustomerProvider: Starting to add customer: ${customer.firstName} ${customer.lastName}');
+      debugPrint('🔄 CustomerProvider: Calling ApiService.createCustomer...');
       
-      final newPatient = await ApiService.createPatient(patient);
+      final newCustomer = await ApiService.createCustomer(customer);
       
-      debugPrint('✅ PatientProvider: Successfully received patient from API: ${newPatient.id}');
-      _patients.add(newPatient);
+      debugPrint('✅ CustomerProvider: Successfully received customer from API: ${newCustomer.id}');
+      _customers.add(newCustomer);
       _clearError();
       notifyListeners();
-      debugPrint('✅ Successfully added patient: ${newPatient.firstName} ${newPatient.lastName}');
+      debugPrint('✅ Successfully added customer: ${newCustomer.firstName} ${newCustomer.lastName}');
       
     
       
       return true;
     } catch (e, stackTrace) {
-      final errorMsg = 'Failed to add patient: $e';
-      debugPrint('❌ PatientProvider Error: $errorMsg');
-      debugPrint('❌ PatientProvider Stack: $stackTrace');
+      final errorMsg = 'Failed to add customer: $e';
+      debugPrint('❌ CustomerProvider Error: $errorMsg');
+      debugPrint('❌ CustomerProvider Stack: $stackTrace');
       _setError(errorMsg);
       return false;
     } finally {
@@ -89,95 +89,95 @@ class PatientProvider with ChangeNotifier {
     }
   }
 
-  // Update an existing patient in MongoDB
-  // Future<bool> updatePatient(String id, Patient patient) async {
+  // Update an existing customer in MongoDB
+  // Future<bool> updateCustomer(String id, Customer customer) async {
   //   _setLoading(true);
   //   try {
-  //     final updatedPatient = await ApiService.updatePatient(id, patient);
-  //     final index = _patients.indexWhere((p) => p.id == id);
+  //     final updatedCustomer = await ApiService.updateCustomer(id, customer);
+  //     final index = _customers.indexWhere((p) => p.id == id);
   //     if (index != -1) {
-  //       _patients[index] = updatedPatient;
+  //       _customers[index] = updatedCustomer;
   //       _clearError();
   //       notifyListeners();
-  //       debugPrint('✅ Successfully updated patient: ${updatedPatient.firstName} ${updatedPatient.lastName}');
+  //       debugPrint('✅ Successfully updated customer: ${updatedCustomer.firstName} ${updatedCustomer.lastName}');
   //       await loadStatistics(); // Refresh stats
   //       return true;
   //     }
   //     return false;
   //   } catch (e) {
-  //     _setError('Failed to update patient: $e');
-  //     debugPrint('❌ Error updating patient: $e');
+  //     _setError('Failed to update customer: $e');
+  //     debugPrint('❌ Error updating customer: $e');
   //     return false;
   //   } finally {
   //     _setLoading(false);
   //   }
   // }
 
-  // Delete a patient from MongoDB
-  // Future<bool> deletePatient(String id) async {
+  // Delete a customer from MongoDB
+  // Future<bool> deleteCustomer(String id) async {
   //   _setLoading(true);
   //   try {
-  //     final success = await ApiService.deletePatient(id);
+  //     final success = await ApiService.deleteCustomer(id);
   //     if (success) {
-  //       _patients.removeWhere((patient) => patient.id == id);
+  //       _customers.removeWhere((customer) => customer.id == id);
   //       _clearError();
   //       notifyListeners();
-  //       debugPrint('✅ Successfully deleted patient with ID: $id');
+  //       debugPrint('✅ Successfully deleted customer with ID: $id');
   //       await loadStatistics(); // Refresh stats
   //       return true;
   //     }
   //     return false;
   //   } catch (e) {
-  //     _setError('Failed to delete patient: $e');
-  //     debugPrint('❌ Error deleting patient: $e');
+  //     _setError('Failed to delete customer: $e');
+  //     debugPrint('❌ Error deleting customer: $e');
   //     return false;
   //   } finally {
   //     _setLoading(false);
   //   }
   // }
 
-  // Search patients in MongoDB
-  Future<void> searchPatients(String query) async {
+  // Search customers in MongoDB
+  Future<void> searchCustomers(String query) async {
     if (query.trim().isEmpty) {
-      await loadPatients();
+      await loadCustomers();
       return;
     }
 
     _setLoading(true);
     try {
-      _patients = await ApiService.searchPatients(query);
+      _customers = await ApiService.searchCustomers(query);
       _clearError();
-      debugPrint('✅ Search completed: found ${_patients.length} patients');
+      debugPrint('✅ Search completed: found ${_customers.length} customers');
     } catch (e) {
-      _setError('Failed to search patients: $e');
-      debugPrint('❌ Error searching patients: $e');
+      _setError('Failed to search customers: $e');
+      debugPrint('❌ Error searching customers: $e');
     } finally {
       _setLoading(false);
     }
   }
 
-  // // Get patients statistics by email domain
-  // Map<String, int> getPatientsStatistics() {
+  // // Get customers statistics by email domain
+  // Map<String, int> getCustomersStatistics() {
   //   final Map<String, int> stats = {};
-  //   for (final patient in _patients) {
-  //     final domain = patient.email.split('@').last;
+  //   for (final customer in _customers) {
+  //     final domain = customer.email.split('@').last;
   //     final domainKey = domain.isNotEmpty ? domain : 'Unknown';
   //     stats[domainKey] = (stats[domainKey] ?? 0) + 1;
   //   }
   //   return stats;
   // }
 
-  // Get total patients count
-  int get totalPatients => _patients.length;
+  // Get total customers count
+  int get totalCustomers => _customers.length;
 
-  // Get patients by email domain
-  List<Patient> getPatientsByEmailDomain(String domain) {
-    return _patients.where((patient) => patient.email.contains('@$domain')).toList();
+  // Get customers by email domain
+  List<Customer> getCustomersByEmailDomain(String domain) {
+    return _customers.where((customer) => customer.email.contains('@$domain')).toList();
   }
 
   // Clear all data
   void clearData() {
-    _patients.clear();
+    _customers.clear();
     _statistics = null;
     _isConnected = false;
     _clearError();

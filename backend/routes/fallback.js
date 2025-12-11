@@ -3,49 +3,49 @@ const express = require('express');
 const router = express.Router();
 
 // Mock data for testing
-const mockPatients = [
-  { _id: '1', nom: 'Test Patient', email: 'test@example.com', age: 30 }
+const mockCustomers = [
+  { _id: '1', nom: 'Test Customer', email: 'test@example.com', age: 30 }
 ];
 
-const mockMedicaments = [
+const mockProducts = [
   { _id: '1', nom: 'Aspirin', description: 'Pain reliever', prix: 10 }
 ];
 
-const mockMaladies = [
+const mockCategories = [
   { _id: '1', nom: 'Headache', description: 'Common pain' }
 ];
 
-// Patients
-router.get('/patients', (req, res) => {
-  res.json(mockPatients);
+// Customers
+router.get('/customers', (req, res) => {
+  res.json(mockCustomers);
 });
 
-router.post('/patients', (req, res) => {
-  const newPatient = { _id: Date.now().toString(), ...req.body };
-  mockPatients.push(newPatient);
-  res.json(newPatient);
+router.post('/customers', (req, res) => {
+  const newCustomer = { _id: Date.now().toString(), ...req.body };
+  mockCustomers.push(newCustomer);
+  res.json(newCustomer);
 });
 
-// Medicaments
-router.get('/medicaments', (req, res) => {
-  res.json(mockMedicaments);
+// Products
+router.get('/products', (req, res) => {
+  res.json(mockProducts);
 });
 
-router.post('/medicaments', (req, res) => {
-  const newMedicament = { _id: Date.now().toString(), ...req.body };
-  mockMedicaments.push(newMedicament);
-  res.json(newMedicament);
+router.post('/products', (req, res) => {
+  const newProduct = { _id: Date.now().toString(), ...req.body };
+  mockProducts.push(newProduct);
+  res.json(newProduct);
 });
 
-// Maladies
-router.get('/maladies', (req, res) => {
-  res.json(mockMaladies);
+// Categories
+router.get('/categories', (req, res) => {
+  res.json(mockCategories);
 });
 
-router.post('/maladies', (req, res) => {
-  const newMalady = { _id: Date.now().toString(), ...req.body };
-  mockMaladies.push(newMalady);
-  res.json(newMalady);
+router.post('/categories', (req, res) => {
+  const newCategory = { _id: Date.now().toString(), ...req.body };
+  mockCategories.push(newCategory);
+  res.json(newCategory);
 });
 
 module.exports = router;

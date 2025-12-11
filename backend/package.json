@@ -13,7 +13,7 @@
     "mongodb",
     "express",
     "api",
-    "patient-management"
+    "customer-management"
   ],
   "author": "FitX Team",
   "license": "MIT",
