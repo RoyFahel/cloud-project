@@ -38,7 +38,7 @@ class PharmaXApp extends StatelessWidget {
             elevation: 0,
             centerTitle: true,
           ),
-          cardTheme: CardThemeData(
+          cardTheme: CardTheme(
             elevation: 4,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
