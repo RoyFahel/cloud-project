@@ -1,4 +1,4 @@
-package com.example.pharmax
+package com.example.fitx
 
 import io.flutter.embedding.android.FlutterActivity
 

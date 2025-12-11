@@ -3,7 +3,7 @@ const Medicament = require('./models/Medicament');
 const Malady = require('./models/Malady');
 
 // MongoDB connection string
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/pharmax';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/fitx';
 
 const medicamentsData = [
   { medicamentName: 'Paracetamol', description: 'Pain reliever and fever reducer' },

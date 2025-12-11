@@ -7,11 +7,11 @@ import 'screens/home_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  runApp(const PharmaXApp());
+  runApp(const FitXApp());
 }
 
-class PharmaXApp extends StatelessWidget {
-  const PharmaXApp({super.key});
+class FitXApp extends StatelessWidget {
+  const FitXApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class PharmaXApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        title: 'PharmaX - MongoDB Connected',
+        title: 'FitX - MongoDB Connected',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.blue,
