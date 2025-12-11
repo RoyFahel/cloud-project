@@ -2,7 +2,7 @@ name: Deploy Fitx Full-Stack App
 
 on:
   push:
-    branches: [Project]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
