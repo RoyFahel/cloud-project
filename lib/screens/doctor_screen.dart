@@ -44,7 +44,6 @@ class _DoctorScreenState extends State<DoctorScreen> {
     if (maladyId != null) {
       setState(() {
         _selectedMaladyId = maladyId;
-        
         _selectedMedicamentId = null;
       });
     }
@@ -56,12 +55,12 @@ class _DoctorScreenState extends State<DoctorScreen> {
     }
 
     if (_selectedMaladyId == null) {
-      _showErrorDialog('Please select a malady (sickness type)');
+      _showErrorDialog('Please select a product category');
       return;
     }
 
     if (_selectedMedicamentId == null) {
-      _showErrorDialog('Please select a medicament');
+      _showErrorDialog('Please select a product');
       return;
     }
 
@@ -73,7 +72,6 @@ class _DoctorScreenState extends State<DoctorScreen> {
       final consultationProvider =
           Provider.of<ConsultationProvider>(context, listen: false);
 
-     
       final patient = await consultationProvider.createPatient(
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
@@ -96,23 +94,22 @@ class _DoctorScreenState extends State<DoctorScreen> {
       }
 
       if (mounted) {
-       
-
         _showSuccessDialog();
       }
     } catch (e) {
       if (mounted) {
-        String errorMessage = 'Failed to save patient information';
-        
+        String errorMessage = 'Failed to save member information';
+
         final errorString = e.toString().toLowerCase();
-        if (errorString.contains('email already exists') || 
-            errorString.contains('duplicate') || 
+        if (errorString.contains('email already exists') ||
+            errorString.contains('duplicate') ||
             errorString.contains('e11000')) {
-          errorMessage = 'This email is already registered in the system. Please use a different email.';
+          errorMessage =
+              'This email is already registered in the system. Please use a different email.';
         } else {
-          errorMessage = 'Failed to save patient information: ${e.toString()}';
+          errorMessage = 'Failed to save member information: ${e.toString()}';
         }
-        
+
         _showErrorDialog(errorMessage);
       }
     } finally {
@@ -128,14 +125,20 @@ class _DoctorScreenState extends State<DoctorScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey[900],
         icon: const Icon(
           Icons.check_circle,
-          color: Colors.green,
-          size: 48,
+          color: Colors.amber,
+          size: 44,
         ),
-        title: const Text('Success'),
+        title: const Text(
+          'Success',
+          style: TextStyle(color: Colors.white),
+        ),
         content: const Text(
-            'Patient information and consultation saved successfully!'),
+          'Member information and product assignment saved successfully!',
+          style: TextStyle(color: Colors.white70),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -150,13 +153,17 @@ class _DoctorScreenState extends State<DoctorScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey[900],
         icon: const Icon(
           Icons.error,
           color: Colors.red,
-          size: 48,
+          size: 44,
         ),
-        title: const Text('Error'),
-        content: Text(message),
+        title: const Text(
+          'Error',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: Text(message, style: const TextStyle(color: Colors.white70)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -167,294 +174,315 @@ class _DoctorScreenState extends State<DoctorScreen> {
     );
   }
 
+  InputDecoration _filledDecoration({required String label, IconData? prefix}) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: prefix != null ? Icon(prefix, color: Colors.grey) : null,
+      filled: true,
+      fillColor: Colors.grey[900],
+      border: const OutlineInputBorder(),
+      labelStyle: const TextStyle(color: Colors.amber),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    // theme colors aligned with AdminScreen black & yellow
+    final accent = Colors.amber;
+    final surface = Colors.black;
+    final cardSurface = Colors.grey[900];
+    final onSurface = Colors.white;
+
     return Scaffold(
+      backgroundColor: surface,
       appBar: AppBar(
         title: const Text(
-          'Doctor Portal',
+          'Trainer Portal',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
+        backgroundColor: surface,
+        foregroundColor: onSurface,
         elevation: 0,
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.blue.withOpacity(0.1),
-              Colors.white,
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        children: [
-                          const Icon(
-                            Icons.person_add,
-                            size: 48,
-                            color: Colors.blue,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Add New Patient',
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineSmall
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue,
-                                ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Enter patient information below',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color: Colors.grey[600],
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                 
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Patient Information',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                          const SizedBox(height: 20),
-
-    
-                          TextFormField(
-                            controller: _firstNameController,
-                            decoration: const InputDecoration(
-                              labelText: 'First Name',
-                              prefixIcon: Icon(Icons.person),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Please enter first name';
-                              }
-                              if (value.trim().length < 3) {
-                                return 'First name must be at least 3 characters';
-                              }
-                              return null;
-                            },
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          
-                          TextFormField(
-                            controller: _lastNameController,
-                            decoration: const InputDecoration(
-                              labelText: 'Last Name',
-                              prefixIcon: Icon(Icons.person_outline),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Please enter last name';
-                              }
-                              if (value.trim().length < 3) {
-                                return 'Last name must be at least 3 characters';
-                              }
-                              return null;
-                            },
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          
-                          TextFormField(
-                            controller: _emailController,
-                            decoration: const InputDecoration(
-                              labelText: 'Email Address',
-                              prefixIcon: Icon(Icons.email),
-                            ),
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Please enter email address';
-                              }
-                            
-                              if (!EmailValidator.validate(value)) {
-                                return 'Please enter a valid email address';
-                              }
-                              return null; 
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Medical Information
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Medical Information',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                          const SizedBox(height: 20),
-
-                          // Malady (Sickness Type) Dropdown
-                          Consumer<ConsultationProvider>(
-                            builder: (context, consultationProvider, child) {
-                              return DropdownButtonFormField<String>(
-                                value: _selectedMaladyId,
-                                decoration: const InputDecoration(
-                                  labelText: 'Type of Illness',
-                                  prefixIcon: Icon(Icons.local_hospital),
-                                ),
-                                items:
-                                    consultationProvider.maladies.map((malady) {
-                                  return DropdownMenuItem<String>(
-                                    value: malady.id,
-                                    child: Text(malady.maladyName),
-                                  );
-                                }).toList(),
-                                onChanged: _onMaladyChanged,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please select a type of illness';
-                                  }
-                                  return null;
-                                },
-                              );
-                            },
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          // Medicament Dropdown
-                          Consumer<ConsultationProvider>(
-                            builder: (context, consultationProvider, child) {
-                              return DropdownButtonFormField<String>(
-                                value: _selectedMedicamentId,
-                                decoration: const InputDecoration(
-                                  labelText: 'Prescribed Medication',
-                                  prefixIcon: Icon(Icons.medical_services),
-                                ),
-                                items: consultationProvider
-                                    .getMedicamentsForMalady(
-                                        _selectedMaladyId ?? '')
-                                    .map((medicament) {
-                                  return DropdownMenuItem<String>(
-                                    value: medicament.id,
-                                    child: Text(medicament.medicamentName),
-                                  );
-                                }).toList(),
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    setState(() {
-                                      _selectedMedicamentId = value;
-                                    });
-                                  }
-                                },
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please select a medication';
-                                  }
-                                  return null;
-                                },
-                              );
-                            },
-                          ),
-
-                         
-
-                          // Notes
-                          
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // Submit Button
-                  ElevatedButton(
-                    onPressed: _isSubmitting ? null : _submitForm,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: _isSubmitting
-                        ? const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Card(
+                  color: cardSurface,
+                  elevation: 6,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.fitness_center,
+                          size: 48,
+                          color: accent,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Add New Member',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: onSurface,
                               ),
-                              SizedBox(width: 12),
-                              Text('Adding Patient...'),
-                            ],
-                          )
-                        : const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.add),
-                              SizedBox(width: 8),
-                              Text('Add Patient'),
-                            ],
-                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Enter member information below',
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Colors.grey[400],
+                                  ),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
+                ),
+
+                const SizedBox(height: 24),
+
+                Card(
+                  color: cardSurface,
+                  elevation: 6,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Member Information',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: onSurface),
+                        ),
+                        const SizedBox(height: 20),
+                        // First name
+                        TextFormField(
+                          controller: _firstNameController,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: _filledDecoration(
+                              label: 'First Name', prefix: Icons.person),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Please enter first name';
+                            }
+                            if (value.trim().length < 3) {
+                              return 'First name must be at least 3 characters';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Last name
+                        TextFormField(
+                          controller: _lastNameController,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: _filledDecoration(
+                              label: 'Last Name', prefix: Icons.person_outline),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Please enter last name';
+                            }
+                            if (value.trim().length < 3) {
+                              return 'Last name must be at least 3 characters';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Email
+                        TextFormField(
+                          controller: _emailController,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: _filledDecoration(
+                              label: 'Email Address', prefix: Icons.email),
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Please enter email address';
+                            }
+
+                            if (!EmailValidator.validate(value)) {
+                              return 'Please enter a valid email address';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Product Information (was Medical Information)
+                Card(
+                  color: cardSurface,
+                  elevation: 6,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Product Information',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: onSurface),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Product Category Dropdown (was Type of Illness)
+                        Consumer<ConsultationProvider>(
+                          builder: (context, consultationProvider, child) {
+                            return DropdownButtonFormField<String>(
+                              value: _selectedMaladyId,
+                              dropdownColor: Colors.grey[850],
+                              decoration: InputDecoration(
+                                labelText: 'Product Category',
+                                prefixIcon: const Icon(Icons.category,
+                                    color: Colors.grey),
+                                labelStyle:
+                                    const TextStyle(color: Colors.amber),
+                                filled: true,
+                                fillColor: Colors.grey[900],
+                                border: const OutlineInputBorder(),
+                              ),
+                              items:
+                                  consultationProvider.maladies.map((malady) {
+                                return DropdownMenuItem<String>(
+                                  value: malady.id,
+                                  child: Text(malady.maladyName,
+                                      style:
+                                          const TextStyle(color: Colors.white)),
+                                );
+                              }).toList(),
+                              onChanged: _onMaladyChanged,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select a product category';
+                                }
+                                return null;
+                              },
+                            );
+                          },
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Product Dropdown (was Prescribed Medication)
+                        Consumer<ConsultationProvider>(
+                          builder: (context, consultationProvider, child) {
+                            return DropdownButtonFormField<String>(
+                              value: _selectedMedicamentId,
+                              dropdownColor: Colors.grey[850],
+                              decoration: InputDecoration(
+                                labelText: 'Product',
+                                prefixIcon: const Icon(Icons.inventory_2,
+                                    color: Colors.grey),
+                                labelStyle:
+                                    const TextStyle(color: Colors.amber),
+                                filled: true,
+                                fillColor: Colors.grey[900],
+                                border: const OutlineInputBorder(),
+                              ),
+                              items: consultationProvider
+                                  .getMedicamentsForMalady(
+                                      _selectedMaladyId ?? '')
+                                  .map((medicament) {
+                                return DropdownMenuItem<String>(
+                                  value: medicament.id,
+                                  child: Text(medicament.medicamentName,
+                                      style:
+                                          const TextStyle(color: Colors.white)),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                if (value != null) {
+                                  setState(() {
+                                    _selectedMedicamentId = value;
+                                  });
+                                }
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select a product';
+                                }
+                                return null;
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 32),
+
+                // Submit Button
+                ElevatedButton(
+                  onPressed: _isSubmitting ? null : _submitForm,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: accent,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: _isSubmitting
+                      ? const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.black,
+                              ),
+                            ),
+                            SizedBox(width: 12),
+                            Text('Adding Member...'),
+                          ],
+                        )
+                      : const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.add),
+                            SizedBox(width: 8),
+                            Text('Add Member'),
+                          ],
+                        ),
+                ),
+              ],
             ),
           ),
         ),

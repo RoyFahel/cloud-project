@@ -7,71 +7,104 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
+    final accent = Colors.amber;
+    final surface = Colors.black;
+    final cardSurface = Colors.grey[900];
+    final onSurface = Colors.white;
+
     return Scaffold(
+      backgroundColor: surface,
       appBar: AppBar(
         title: const Text(
-          'PharmaX',
+          'FitX Gym',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
-        backgroundColor: primary,
+        backgroundColor: surface,
         elevation: 0,
+        foregroundColor: onSurface,
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
           children: [
-            const SizedBox(height: 40),
-            Text(
-              'Welcome to PharmaX',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold,color: primary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Patient Management System',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 60),
-            SizedBox(
-              width: double.infinity,
-              child: _roleTile(
-                context,
-                title: 'Doctor Portal',
-                subtitle: 'Add new patient information',
-                icon: Icons.medical_services,
-                color: Colors.blue,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const DoctorScreen()),
+            // Welcome header
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: Colors.grey[850],
+                  child: Icon(Icons.fitness_center, color: accent),
                 ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: _roleTile(
-                context,
-                title: 'Admin Portal',
-                subtitle: 'Manage patient records',
-                icon: Icons.admin_panel_settings,
-                color: Colors.green,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const AdminScreen()),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Welcome to FitX',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Member Management Dashboard',
+                        style: TextStyle(color: Colors.grey[400]),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
-            const SizedBox(height: 40),
-            const Text(
-              '© 2025 PharmaX - Patient Management System',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey, fontSize: 12),
+
+            const SizedBox(height: 28),
+
+            // Tiles in grid-like layout
+            Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              children: [
+                _roleTile(
+                  context,
+                  title: 'Trainer Portal',
+                  subtitle: 'Add new member & session info',
+                  icon: Icons.fitness_center,
+                  color: accent,
+                  cardSurface: cardSurface!,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const DoctorScreen()),
+                  ),
+                ),
+                _roleTile(
+                  context,
+                  title: 'Manager Portal',
+                  subtitle: 'Manage catalog & sessions',
+                  icon: Icons.admin_panel_settings,
+                  color: accent,
+                  cardSurface: cardSurface,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AdminScreen()),
+                  ),
+                ),
+                
+              ],
+            ),
+
+            const SizedBox(height: 36),
+
+            // Footer
+            Center(
+              child: Text(
+                '© 2025 FitX Gym',
+                style: TextStyle(color: Colors.grey[500], fontSize: 12),
+              ),
             ),
           ],
         ),
@@ -79,46 +112,57 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  
   Widget _roleTile(
     BuildContext context, {
     required String title,
     required String subtitle,
     required IconData icon,
     required Color color,
+    required Color cardSurface,
     required VoidCallback onTap,
   }) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      clipBehavior: Clip.antiAlias, // ensure ripple is clipped
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
-          child: Column(
-            children: [
-              CircleAvatar(
-                radius: 28,
-                backgroundColor: color.withOpacity(0.15),
-                child: Icon(icon, size: 28, color: color),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: color,
+    return SizedBox(
+      width: MediaQuery.of(context).size.width >= 900 ? 260 : double.infinity,
+      child: Card(
+        color: cardSurface,
+        elevation: 6,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 14),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 26,
+                  backgroundColor: Colors.grey[800],
+                  child: Icon(icon, size: 26, color: color),
                 ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                subtitle,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.grey),
-              ),
-            ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        subtitle,
+                        style: TextStyle(color: Colors.grey[400], fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.chevron_right, color: Colors.grey[600]),
+              ],
+            ),
           ),
         ),
       ),
