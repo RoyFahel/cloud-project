@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' hide Group;
+import 'package:flutter/foundation.dart';
 import '../models/group.dart';
 import '../models/product.dart';
 import '../models/order.dart';

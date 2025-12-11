@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const OrderController = require('../controllers/orderController');
-
 // GET /api/orders - Get all orders
 router.get('/', OrderController.getAllOrders);
 
