@@ -94,7 +94,6 @@ app.get('/health', (req, res) => {
 app.get('/db-info', (req, res) => {
   const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/fitx';
   res.json({
-    mongoUri: uri,
     environment: process.env.NODE_ENV || 'development'
   });
 });
