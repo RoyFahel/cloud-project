@@ -98,7 +98,7 @@ class _DoctorScreenState extends State<DoctorScreen> {
       }
     } catch (e) {
       if (mounted) {
-        String errorMessage = 'Failed to save member information';
+        String errorMessage = 'Failed to save order information';
 
         final errorString = e.toString().toLowerCase();
         if (errorString.contains('email already exists') ||
@@ -107,7 +107,7 @@ class _DoctorScreenState extends State<DoctorScreen> {
           errorMessage =
               'This email is already registered in the system. Please use a different email.';
         } else {
-          errorMessage = 'Failed to save member information: ${e.toString()}';
+          errorMessage = 'Failed to save order information: ${e.toString()}';
         }
 
         _showErrorDialog(errorMessage);
@@ -136,7 +136,7 @@ class _DoctorScreenState extends State<DoctorScreen> {
           style: TextStyle(color: Colors.white),
         ),
         content: const Text(
-          'Member information and product assignment saved successfully!',
+          'Order information and product assignment saved successfully!',
           style: TextStyle(color: Colors.white70),
         ),
         actions: [
@@ -468,7 +468,7 @@ class _DoctorScreenState extends State<DoctorScreen> {
                               ),
                             ),
                             SizedBox(width: 12),
-                            Text('Adding Member...'),
+                            Text('Adding Order...'),
                           ],
                         )
                       : const Row(
@@ -476,7 +476,7 @@ class _DoctorScreenState extends State<DoctorScreen> {
                           children: [
                             Icon(Icons.add),
                             SizedBox(width: 8),
-                            Text('Add Member'),
+                            Text('Add Order'),
                           ],
                         ),
                 ),
