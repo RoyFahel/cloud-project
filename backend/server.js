@@ -12,10 +12,11 @@ const orderRoutes = require('./routes/orders');
 const app = express();
 const PORT = process.env.PORT ||  8080;
 
-// CORS configuration
+// CORS configurations
 const corsOptions = {
   origin: [
     'http://roy-frontend-website.s3-website.eu-north-1.amazonaws.com',
+    'https://roy-frontend-website.s3-website.eu-north-1.amazonaws.com',
     'http://localhost:3000',
     'http://localhost:8080',
     'http://127.0.0.1:3000'
@@ -33,6 +34,7 @@ app.use((req, res, next) => {
   const origin = req.headers.origin;
   const allowedOrigins = [
     'http://roy-frontend-website.s3-website.eu-north-1.amazonaws.com',
+    'https://roy-frontend-website.s3-website.eu-north-1.amazonaws.com',
     'http://localhost:3000',
     'http://localhost:8080',
     'http://127.0.0.1:3000'
