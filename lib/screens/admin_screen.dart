@@ -697,7 +697,7 @@ class _AdminScreenState extends State<AdminScreen> {
                             ),
                             DataColumn(
                               label: Text(
-                                'Member',
+                                'Members',
                                 style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                               ),
                             ),
