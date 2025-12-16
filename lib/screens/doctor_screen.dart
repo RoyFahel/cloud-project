@@ -231,7 +231,7 @@ class _DoctorScreenState extends State<DoctorScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'Add New Member',
+                          'Add New Order',
                           style: Theme.of(context)
                               .textTheme
                               .headlineSmall
@@ -242,7 +242,7 @@ class _DoctorScreenState extends State<DoctorScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Enter member information below',
+                          'Enter Order information below',
                           style:
                               Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: Colors.grey[400],
@@ -266,7 +266,7 @@ class _DoctorScreenState extends State<DoctorScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Member Information',
+                          'Order Information',
                           style: Theme.of(context)
                               .textTheme
                               .titleLarge

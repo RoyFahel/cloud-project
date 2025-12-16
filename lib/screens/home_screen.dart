@@ -72,7 +72,7 @@ class HomeScreen extends StatelessWidget {
                 _roleTile(
                   context,
                   title: 'Trainer Portal',
-                  subtitle: 'Add new member & session info',
+                  subtitle: 'Add new order',
                   icon: Icons.fitness_center,
                   color: accent,
                   cardSurface: cardSurface!,
